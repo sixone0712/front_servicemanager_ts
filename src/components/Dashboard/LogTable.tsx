@@ -3,6 +3,9 @@ import { Layout, Menu, Table, Breadcrumb, Button, Space, Row } from 'antd';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { useDashBoardState } from '../../contexts/DashboardContext';
+import axios from 'axios';
+import { DeferFn, PromiseFn, useAsync } from 'react-async';
+import { getLogFileList } from '../../api/dashboard';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -17,9 +20,9 @@ export type LogFile = {
 
 export type LogFileList = LogFile[];
 
-const data: LogFileList = [];
+const dataList: LogFileList = [];
 for (let i = 0; i < 49; i++) {
-  data.push({
+  dataList.push({
     key: i,
     fileType: `tomcat`,
     fileName: 'tomcat.log',
@@ -68,9 +71,34 @@ const logFilter = [
   },
 ];
 
+// const loadFirstName: PromiseFn<any> = ({ userId }) =>
+//   fetch(`https://reqres.in/api/users/${userId}`)
+//     .then(res => (res.ok ? Promise.resolve(res) : Promise.reject(res)))
+//     .then(res => res.json())
+//     .then(({ data }) => data.first_name);
+
+const loadFirstName: DeferFn<any> = async (args: string[]) => {
+  // const { data } = await axios.get(`https://1reqres.in/api/users/${args[0]}`);
+  // console.log('axios_data', data);
+  // return data.data.first_name;
+
+  const { data } = await getLogFileList(args[0]);
+  return data;
+};
+
 function LogTable(): JSX.Element {
   const { selectedDevice } = useDashBoardState();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [changeId, setChangeId] = useState(false);
+
+  const { data, error, isLoading, run } = useAsync({
+    deferFn: loadFirstName,
+    userId: 1,
+  });
+
+  console.log('isLoading', isLoading);
+  console.log('error', error);
+  console.log('data', data);
 
   const onSelectChange = (
     selectedRowKeys: React.Key[],
@@ -113,6 +141,10 @@ function LogTable(): JSX.Element {
                 </Button>
                 <Button
                   icon={<DownloadOutlined style={{ verticalAlign: 0 }} />}
+                  onClick={() => {
+                    console.log('download');
+                    run(['1']);
+                  }}
                 >
                   Download
                 </Button>
@@ -121,7 +153,7 @@ function LogTable(): JSX.Element {
             <Table
               rowSelection={rowSelection}
               // columns={columns}
-              dataSource={data}
+              dataSource={dataList}
               size="small"
               bordered
               pagination={{ pageSize: 7, position: ['bottomCenter'] }}

@@ -64,7 +64,7 @@ export function getDeviceList(): Promise<DeviceList> {
   });
 }
 
-export function getLogFileList(): Promise<LogFileList> {
+export function getLogFileList(device: string): Promise<any> {
   const data: LogFileList = [];
 
   let cnt = 0;
@@ -140,7 +140,7 @@ export function getLogFileList(): Promise<LogFileList> {
 
   return new Promise(function (resolve, reject) {
     setTimeout(() => {
-      resolve(data);
+      resolve({ data: data });
     }, 1000);
   });
 }
