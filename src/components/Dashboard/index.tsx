@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Layout,
   Menu,
@@ -17,6 +17,8 @@ import {
 import styled from 'styled-components';
 import StatusTable from './StatusTable';
 import LogDownload from './LogDownload';
+import { getDeviceList } from '../../api/dashboard';
+import { useLDashBoardDispatch } from '../../contexts/DashboardContext';
 // import './Dashboard.css';
 
 const { SubMenu } = Menu;
@@ -49,6 +51,19 @@ const menu: JSX.Element = (
 );
 
 function Dashboard(): JSX.Element {
+  const dispatch = useLDashBoardDispatch();
+  useEffect(() => {
+    const fetchDeviceList = async () => {
+      try {
+        const resData = await getDeviceList();
+        dispatch({ type: 'SET_DEVICE_LIST', deviceList: resData });
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchDeviceList().then(r => r);
+  }, []);
+
   return (
     <>
       <Layout>

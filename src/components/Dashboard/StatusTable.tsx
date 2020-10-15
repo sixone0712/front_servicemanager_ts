@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Table,
   Tag,
@@ -12,6 +12,11 @@ import {
 } from 'antd';
 import { RedoOutlined, SyncOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import {
+  useDashBoardState,
+  useLDashBoardDispatch,
+} from '../../contexts/DashboardContext';
+import { getDeviceList } from '../../api/dashboard';
 
 const { Column, ColumnGroup } = Table;
 
@@ -128,6 +133,22 @@ const StatusText = styled(Col)`
 `;
 
 function StatusTable(): JSX.Element {
+  const { deviceList } = useDashBoardState();
+  const dispatch = useLDashBoardDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const onRefresh = async () => {
+    try {
+      setLoading(true);
+      const resData = await getDeviceList();
+      dispatch({ type: 'SET_DEVICE_LIST', deviceList: resData });
+      setLoading(false);
+    } catch (e) {
+      setLoading(false);
+      console.error(e);
+    }
+  };
+
   const renderStatus = (
     text: string[],
     record: DockerStatus,
@@ -159,6 +180,7 @@ function StatusTable(): JSX.Element {
           style={{ width: '100px' }}
           type="primary"
           icon={<SyncOutlined style={{ verticalAlign: 0 }} />}
+          onClick={onRefresh}
         >
           Reload
         </Button>
@@ -167,9 +189,11 @@ function StatusTable(): JSX.Element {
         tableLayout="fixed"
         size="small"
         bordered
-        dataSource={data}
+        //dataSource={data}
+        dataSource={deviceList}
         // scroll={{ y: 185 }}
         pagination={{ pageSize: 4, position: ['bottomCenter'] }}
+        loading={loading}
       >
         <Column
           title="Name"
