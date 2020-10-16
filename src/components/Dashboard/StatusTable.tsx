@@ -140,8 +140,8 @@ function StatusTable(): JSX.Element {
   const onRefresh = async () => {
     try {
       setLoading(true);
-      const resData = await getDeviceList();
-      dispatch({ type: 'SET_DEVICE_LIST', deviceList: resData });
+      const { data } = await getDeviceList();
+      dispatch({ type: 'SET_DEVICE_LIST', deviceList: data });
       setLoading(false);
     } catch (e) {
       setLoading(false);
