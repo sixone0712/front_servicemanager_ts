@@ -1,7 +1,7 @@
 import { DeviceList } from '../contexts/DashboardContext';
 import { LogFileList, LogType } from '../components/Dashboard/LogTable';
 
-export function getDeviceList(): Promise<DeviceList> {
+export function getDeviceList(): Promise<any> {
   // axios.get
   const data = [
     {
@@ -59,7 +59,7 @@ export function getDeviceList(): Promise<DeviceList> {
 
   return new Promise(function (resolve, reject) {
     setTimeout(() => {
-      resolve(data);
+      resolve({ data: data });
     }, 1000);
   });
 }

@@ -56,7 +56,7 @@ function Dashboard(): JSX.Element {
     const fetchDeviceList = async () => {
       try {
         const resData = await getDeviceList();
-        dispatch({ type: 'SET_DEVICE_LIST', deviceList: resData });
+        dispatch({ type: 'SET_DEVICE_LIST', deviceList: resData.data });
       } catch (e) {
         console.error(e);
       }

@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Menu, Table, Breadcrumb, Button, Space, Row } from 'antd';
+import {
+  Layout,
+  Menu,
+  Table,
+  Breadcrumb,
+  Button,
+  Space,
+  Row,
+  Result,
+} from 'antd';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { useDashBoardState } from '../../contexts/DashboardContext';
 import axios from 'axios';
 import { DeferFn, PromiseFn, useAsync } from 'react-async';
 import { getLogFileList } from '../../api/dashboard';
+import useAsyncAxios from '../../hooks/useAsyncAxios';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -86,11 +96,34 @@ const loadFirstName: DeferFn<any> = async (args: string[]) => {
   return data;
 };
 
+const reqLogFileList = (id: string | null) => {
+  //return axios.get(`https://jsonplaceholder.typicode.com/users/${id}`);
+  return getLogFileList('ESP1');
+};
+
 function LogTable(): JSX.Element {
   const { selectedDevice } = useDashBoardState();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [changeId, setChangeId] = useState(false);
+  const [listState, listRefetch] = useAsyncAxios(
+    () => reqLogFileList(selectedDevice),
+    [selectedDevice],
+    true,
+  );
 
+  useEffect(() => {
+    console.log('useEffect_selectedDevice', selectedDevice);
+    if (selectedDevice) {
+      listRefetch().then(r => r);
+    }
+  }, [selectedDevice]);
+
+  const onClickDownload = () => {
+    listRefetch().then(r => r);
+  };
+
+  console.log('listState', listState);
+
+  /*
   const { data, error, isLoading, run } = useAsync({
     deferFn: loadFirstName,
     userId: 1,
@@ -99,6 +132,12 @@ function LogTable(): JSX.Element {
   console.log('isLoading', isLoading);
   console.log('error', error);
   console.log('data', data);
+
+  const getFileList() => {
+    console.log('download');
+    run(['1']);
+  }
+  */
 
   const onSelectChange = (
     selectedRowKeys: React.Key[],
@@ -129,6 +168,7 @@ function LogTable(): JSX.Element {
             <Breadcrumb.Item>{selectedDevice}</Breadcrumb.Item>
           )}
         </Breadcrumb>
+        {!selectedDevice && <Result title="Please select a device." />}
         {selectedDevice && (
           <>
             <Row justify="end" style={{ marginBottom: '10px' }}>
@@ -136,15 +176,12 @@ function LogTable(): JSX.Element {
                 <Button
                   type="primary"
                   icon={<SyncOutlined style={{ verticalAlign: 0 }} />}
+                  onClick={onClickDownload}
                 >
                   Reload
                 </Button>
                 <Button
                   icon={<DownloadOutlined style={{ verticalAlign: 0 }} />}
-                  onClick={() => {
-                    console.log('download');
-                    run(['1']);
-                  }}
                 >
                   Download
                 </Button>
@@ -153,11 +190,13 @@ function LogTable(): JSX.Element {
             <Table
               rowSelection={rowSelection}
               // columns={columns}
-              dataSource={dataList}
+              //dataSource={dataList}
+              dataSource={listState.data?.data ? listState.data.data : []}
               size="small"
               bordered
               pagination={{ pageSize: 7, position: ['bottomCenter'] }}
               tableLayout="fixed"
+              loading={listState.loading}
               // style={{
               //   minWidth: '675px',
               // }}
