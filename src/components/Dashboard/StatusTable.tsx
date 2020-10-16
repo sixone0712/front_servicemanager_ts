@@ -190,7 +190,7 @@ function StatusTable(): JSX.Element {
         size="small"
         bordered
         //dataSource={data}
-        dataSource={deviceList}
+        dataSource={loading ? [] : deviceList}
         // scroll={{ y: 185 }}
         pagination={{ pageSize: 4, position: ['bottomCenter'] }}
         loading={loading}
