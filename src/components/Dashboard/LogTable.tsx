@@ -98,7 +98,7 @@ const loadFirstName: DeferFn<any> = async (args: string[]) => {
 
 const reqLogFileList = (id: string | null) => {
   //return axios.get(`https://jsonplaceholder.typicode.com/users/${id}`);
-  return getLogFileList('ESP1');
+  return getLogFileList(id);
 };
 
 function LogTable(): JSX.Element {

@@ -17,6 +17,7 @@ import {
   useLDashBoardDispatch,
 } from '../../contexts/DashboardContext';
 import { getDeviceList } from '../../api/dashboard';
+import { stringify } from 'querystring';
 
 const { Column, ColumnGroup } = Table;
 
@@ -136,6 +137,8 @@ function StatusTable(): JSX.Element {
   const { deviceList } = useDashBoardState();
   const dispatch = useLDashBoardDispatch();
   const [loading, setLoading] = useState(false);
+  console.log('deviceList', deviceList);
+  console.log('deviceList', JSON.stringify(deviceList));
 
   const onRefresh = async () => {
     try {

@@ -64,7 +64,7 @@ export function getDeviceList(): Promise<any> {
   });
 }
 
-export function getLogFileList(device: string): Promise<any> {
+export function getLogFileList(device: string | null): Promise<any> {
   const data: LogFileList = [];
 
   let cnt = 0;
@@ -72,7 +72,7 @@ export function getLogFileList(device: string): Promise<any> {
     data.push({
       key: cnt,
       fileType: LogType.LOGIN_OUT,
-      fileName: `login_out_${i}.log`,
+      fileName: `${device}_login_out_${i}.log`,
       fileSize: `24 KB`,
     });
     cnt++;
@@ -82,7 +82,7 @@ export function getLogFileList(device: string): Promise<any> {
     data.push({
       key: cnt,
       fileType: LogType.USER_JOB,
-      fileName: `user_job_${i}.log`,
+      fileName: `${device}_user_job_${i}.log`,
       fileSize: `24 KB`,
     });
     cnt++;
@@ -92,7 +92,7 @@ export function getLogFileList(device: string): Promise<any> {
     data.push({
       key: cnt,
       fileType: LogType.DOWNLOADED_FILE,
-      fileName: `download_file_${i}.log`,
+      fileName: `${device}_download_file_${i}.log`,
       fileSize: `24 KB`,
     });
     cnt++;
@@ -102,7 +102,7 @@ export function getLogFileList(device: string): Promise<any> {
     data.push({
       key: cnt,
       fileType: LogType.ESP_OTS_PROCESS,
-      fileName: `esp_ots_process_${i}.log`,
+      fileName: `${device}_esp_ots_process_${i}.log`,
       fileSize: `24 KB`,
     });
     cnt++;
@@ -112,7 +112,7 @@ export function getLogFileList(device: string): Promise<any> {
     data.push({
       key: cnt,
       fileType: LogType.DOWNLOAD_FILE_STATUS,
-      fileName: `download_file_status_${i}.log`,
+      fileName: `${device}_download_file_status_${i}.log`,
       fileSize: `24 KB`,
     });
     cnt++;
@@ -122,7 +122,7 @@ export function getLogFileList(device: string): Promise<any> {
     data.push({
       key: cnt,
       fileType: LogType.ERROR,
-      fileName: `error_exception_${i}.log`,
+      fileName: `${device}_error_exception_${i}.log`,
       fileSize: `24 KB`,
     });
     cnt++;
@@ -132,7 +132,7 @@ export function getLogFileList(device: string): Promise<any> {
     data.push({
       key: cnt,
       fileType: LogType.TOMCAT,
-      fileName: `tomcat_${i}.log`,
+      fileName: `${device}_tomcat_${i}.log`,
       fileSize: `24 KB`,
     });
     cnt++;
