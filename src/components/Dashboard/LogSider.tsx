@@ -9,8 +9,10 @@ const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
 function LogSider(): JSX.Element {
-  const logDownDispatch = useLDashBoardDispatch();
-  const { deviceList } = useDashBoardState();
+  const dispatch = useLDashBoardDispatch();
+  const {
+    deviceInfo: { list, success, error, failure, pending, selected },
+  } = useDashBoardState();
 
   const onClick = ({
     item,
@@ -23,14 +25,14 @@ function LogSider(): JSX.Element {
     item: React.ReactInstance;
     domEvent: React.MouseEvent<HTMLElement>;
   }) => {
-    console.log('item', item);
-    console.log('key', key);
-    console.log('key', typeof key);
-    console.log('keyPath', keyPath);
-    console.log('domEvent', domEvent);
-    logDownDispatch({
+    // console.log('item', item);
+    // console.log('key', key);
+    // console.log('key', typeof key);
+    // console.log('keyPath', keyPath);
+    // console.log('domEvent', domEvent);
+    dispatch({
       type: 'SELECT_DEVICE',
-      selectedDevice: typeof key === 'number' ? JSON.stringify(key) : key,
+      selected: typeof key === 'number' ? JSON.stringify(key) : key,
     });
   };
   return (
@@ -65,7 +67,7 @@ function LogSider(): JSX.Element {
         <Menu.Item key="10">option10</Menu.Item>
         <Menu.Item key="11">option11</Menu.Item>
         <Menu.Item key="12">option12</Menu.Item> */}
-        {deviceList.map(device => (
+        {list?.map(device => (
           <Menu.Item key={device.key}>{device.name}</Menu.Item>
         ))}
       </Menu>

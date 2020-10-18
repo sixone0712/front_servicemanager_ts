@@ -13,11 +13,13 @@ import {
 import { RedoOutlined, SyncOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import {
+  loadDeviceList,
   useDashBoardState,
   useLDashBoardDispatch,
 } from '../../contexts/DashboardContext';
 import { getDeviceList } from '../../api/dashboard';
 import { stringify } from 'querystring';
+import { ModalConfirm } from '../Modal/Modal';
 
 const { Column, ColumnGroup } = Table;
 
@@ -134,22 +136,13 @@ const StatusText = styled(Col)`
 `;
 
 function StatusTable(): JSX.Element {
-  const { deviceList } = useDashBoardState();
+  const {
+    deviceInfo: { list, success, error, failure, pending, selected },
+  } = useDashBoardState();
   const dispatch = useLDashBoardDispatch();
-  const [loading, setLoading] = useState(false);
-  console.log('deviceList', deviceList);
-  console.log('deviceList', JSON.stringify(deviceList));
 
-  const onRefresh = async () => {
-    try {
-      setLoading(true);
-      const { data } = await getDeviceList();
-      dispatch({ type: 'SET_DEVICE_LIST', deviceList: data });
-      setLoading(false);
-    } catch (e) {
-      setLoading(false);
-      console.error(e);
-    }
+  const onRefresh = () => {
+    loadDeviceList(dispatch).then(r => r);
   };
 
   const renderStatus = (
@@ -157,9 +150,9 @@ function StatusTable(): JSX.Element {
     record: DockerStatus,
     index: number,
   ) => {
-    console.log('name', text);
-    console.log('record', record);
-    console.log('index', index);
+    // console.log('name', text);
+    // console.log('record', record);
+    // console.log('index', index);
     return (
       <>
         {text.map(item => (
@@ -170,6 +163,19 @@ function StatusTable(): JSX.Element {
         ))}
       </>
     );
+  };
+
+  const onDockerRestart = () => {
+    ModalConfirm({
+      title: 'Docker Restart',
+      content: 'Do you want to restart Docker?',
+      onOk: () => {
+        return new Promise((resolve, reject) => {
+          setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+        }).catch(() => console.log('Oops errors!'));
+      },
+      onCancel: () => {},
+    });
   };
 
   return (
@@ -193,10 +199,10 @@ function StatusTable(): JSX.Element {
         size="small"
         bordered
         //dataSource={data}
-        dataSource={loading ? [] : deviceList}
+        dataSource={pending ? [] : list}
         // scroll={{ y: 185 }}
         pagination={{ pageSize: 4, position: ['bottomCenter'] }}
-        loading={loading}
+        loading={pending}
       >
         <Column
           title="Name"
@@ -234,7 +240,7 @@ function StatusTable(): JSX.Element {
           align="center"
           width="15%"
           render={(text, record, index) => {
-            return <RedoOutlined />;
+            return <RedoOutlined onClick={onDockerRestart} />;
           }}
         />
         <Column
@@ -244,9 +250,9 @@ function StatusTable(): JSX.Element {
           align="center"
           width="15%"
           render={(text, record, index) => {
-            console.log('name', text);
-            console.log('record', record);
-            console.log('index', index);
+            // console.log('name', text);
+            // console.log('record', record);
+            // console.log('index', index);
             return (
               <RedoOutlined
                 onClick={() => {

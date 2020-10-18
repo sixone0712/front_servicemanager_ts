@@ -12,17 +12,18 @@ import {
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { useDashBoardState } from '../../contexts/DashboardContext';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { DeferFn, PromiseFn, useAsync } from 'react-async';
 import { getLogFileList } from '../../api/dashboard';
 import useAsyncAxios from '../../hooks/useAsyncAxios';
+import { join } from 'path';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 const { Column, ColumnGroup } = Table;
 
 export type LogFile = {
-  key: number;
+  key: string;
   fileType: string;
   fileName: string;
   fileSize: string;
@@ -33,7 +34,7 @@ export type LogFileList = LogFile[];
 const dataList: LogFileList = [];
 for (let i = 0; i < 49; i++) {
   dataList.push({
-    key: i,
+    key: `${i}`,
     fileType: `tomcat`,
     fileName: 'tomcat.log',
     fileSize: `24 KB`,
@@ -101,21 +102,48 @@ const reqLogFileList = (id: string | null) => {
   return getLogFileList(id);
 };
 
+const loadFileList = (device: string | null): Promise<AxiosResponse<any>> => {
+  return axios.get(
+    `https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files?device=${device}`,
+  );
+};
+
 function LogTable(): JSX.Element {
-  const { selectedDevice } = useDashBoardState();
+  const {
+    deviceInfo: { list, success, error, failure, pending, selected },
+  } = useDashBoardState();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [listState, listRefetch] = useAsyncAxios(
-    () => reqLogFileList(selectedDevice),
-    [selectedDevice],
+    () => loadFileList(selected),
+    [selected],
     true,
   );
 
+  const [fileList, setFileList] = useState<LogFileList>([]);
+
   useEffect(() => {
-    console.log('useEffect_selectedDevice', selectedDevice);
-    if (selectedDevice) {
+    const { lists } = listState?.data?.data || { lists: [] };
+
+    console.log('[LogTable][useEffect_1]lists', lists);
+    const addKeyList: LogFileList = lists.map(
+      (list: { fileName: string; fileType: string; fileSize: string }) => {
+        return {
+          key: list.fileName,
+          ...list,
+        };
+      },
+    );
+    setFileList(addKeyList);
+  }, [listState.data]);
+
+  console.log('[LogTable]fileList', fileList);
+
+  useEffect(() => {
+    console.log('[LogTable][useEffect_2]selected', selected);
+    if (selected) {
       listRefetch().then(r => r);
     }
-  }, [selectedDevice]);
+  }, [selected]);
 
   const onClickDownload = () => {
     listRefetch().then(r => r);
@@ -150,6 +178,14 @@ function LogTable(): JSX.Element {
   const rowSelection: TableRowSelection<LogFile> = {
     selectedRowKeys,
     onChange: onSelectChange,
+    onSelectAll: (selected, selectedRows, changeRows) => {
+      console.log('onSelectAll', selected, selectedRows, changeRows);
+      if (selected) {
+        setSelectedRowKeys(fileList.map(item => item.key));
+      } else {
+        setSelectedRowKeys([]);
+      }
+    },
   };
   return (
     // <Layout style={{ padding: '0 24px 24px' }}>
@@ -164,12 +200,10 @@ function LogTable(): JSX.Element {
         <Breadcrumb style={{ margin: '10px 0' }}>
           <Breadcrumb.Item>DashBoard</Breadcrumb.Item>
           <Breadcrumb.Item>Log Download</Breadcrumb.Item>
-          {selectedDevice && (
-            <Breadcrumb.Item>{selectedDevice}</Breadcrumb.Item>
-          )}
+          {selected && <Breadcrumb.Item>{selected}</Breadcrumb.Item>}
         </Breadcrumb>
-        {!selectedDevice && <Result title="Please select a device." />}
-        {selectedDevice && (
+        {!selected && <Result title="Please select a device." />}
+        {selected && (
           <>
             <Row justify="end" style={{ marginBottom: '10px' }}>
               <Space>
@@ -191,7 +225,10 @@ function LogTable(): JSX.Element {
               rowSelection={rowSelection}
               // columns={columns}
               //dataSource={dataList}
-              dataSource={listState.data?.data ? listState.data.data : []}
+              // dataSource={
+              //   listState.data?.data?.lists ? listState.data.data.lists : []
+              // }
+              dataSource={fileList}
               size="small"
               bordered
               pagination={{ pageSize: 7, position: ['bottomCenter'] }}

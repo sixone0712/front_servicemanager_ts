@@ -70,7 +70,7 @@ export function getLogFileList(device: string | null): Promise<any> {
   let cnt = 0;
   for (let i = 0; i < 7; i++) {
     data.push({
-      key: cnt,
+      key: `${cnt}`,
       fileType: LogType.LOGIN_OUT,
       fileName: `${device}_login_out_${i}.log`,
       fileSize: `24 KB`,
@@ -80,7 +80,7 @@ export function getLogFileList(device: string | null): Promise<any> {
 
   for (let i = 0; i < 7; i++) {
     data.push({
-      key: cnt,
+      key: `${cnt}`,
       fileType: LogType.USER_JOB,
       fileName: `${device}_user_job_${i}.log`,
       fileSize: `24 KB`,
@@ -90,7 +90,7 @@ export function getLogFileList(device: string | null): Promise<any> {
 
   for (let i = 0; i < 7; i++) {
     data.push({
-      key: cnt,
+      key: `${cnt}`,
       fileType: LogType.DOWNLOADED_FILE,
       fileName: `${device}_download_file_${i}.log`,
       fileSize: `24 KB`,
@@ -100,7 +100,7 @@ export function getLogFileList(device: string | null): Promise<any> {
 
   for (let i = 0; i < 7; i++) {
     data.push({
-      key: cnt,
+      key: `${cnt}`,
       fileType: LogType.ESP_OTS_PROCESS,
       fileName: `${device}_esp_ots_process_${i}.log`,
       fileSize: `24 KB`,
@@ -110,7 +110,7 @@ export function getLogFileList(device: string | null): Promise<any> {
 
   for (let i = 0; i < 7; i++) {
     data.push({
-      key: cnt,
+      key: `${cnt}`,
       fileType: LogType.DOWNLOAD_FILE_STATUS,
       fileName: `${device}_download_file_status_${i}.log`,
       fileSize: `24 KB`,
@@ -120,7 +120,7 @@ export function getLogFileList(device: string | null): Promise<any> {
 
   for (let i = 0; i < 7; i++) {
     data.push({
-      key: cnt,
+      key: `${cnt}`,
       fileType: LogType.ERROR,
       fileName: `${device}_error_exception_${i}.log`,
       fileSize: `24 KB`,
@@ -130,7 +130,7 @@ export function getLogFileList(device: string | null): Promise<any> {
 
   for (let i = 0; i < 7; i++) {
     data.push({
-      key: cnt,
+      key: `${cnt}`,
       fileType: LogType.TOMCAT,
       fileName: `${device}_tomcat_${i}.log`,
       fileSize: `24 KB`,

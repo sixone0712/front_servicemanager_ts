@@ -18,7 +18,10 @@ import styled from 'styled-components';
 import StatusTable from './StatusTable';
 import LogDownload from './LogDownload';
 import { getDeviceList } from '../../api/dashboard';
-import { useLDashBoardDispatch } from '../../contexts/DashboardContext';
+import {
+  loadDeviceList,
+  useLDashBoardDispatch,
+} from '../../contexts/DashboardContext';
 // import './Dashboard.css';
 import axios from 'axios';
 
@@ -53,21 +56,9 @@ const menu: JSX.Element = (
 
 function Dashboard(): JSX.Element {
   const dispatch = useLDashBoardDispatch();
+
   useEffect(() => {
-    const fetchDeviceList = async () => {
-      try {
-        //const resData = await getDeviceList();
-        //dispatch({ type: 'SET_DEVICE_LIST', deviceList: resData.data });
-        const resData = await axios.get(
-          'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/devices',
-        );
-        console.log('resData', resData);
-        dispatch({ type: 'SET_DEVICE_LIST', deviceList: resData.data.lists });
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    fetchDeviceList().then(r => r);
+    loadDeviceList(dispatch).then(r => r);
   }, []);
 
   return (
