@@ -54,12 +54,28 @@ export function ModalConfirm({
 }): void {
   Modal.confirm({
     title: title,
-    icon: <ExclamationCircleOutlined />,
+    // icon: <ExclamationCircleOutlined />,
     content: content,
     okText: 'Ok',
     cancelText: 'Cancel',
     onOk: onOk,
     onCancel: onCancel,
+    centered: true,
+  });
+}
+
+export function ModalCancel({
+  title,
+  content,
+}: {
+  title: string;
+  content: string;
+}): void {
+  Modal.error({
+    title: title,
+    // icon: <ExclamationCircleOutlined />,
+    content: content,
+    okText: 'Ok',
     centered: true,
   });
 }

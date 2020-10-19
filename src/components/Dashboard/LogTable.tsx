@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Layout,
   Menu,
@@ -8,15 +8,17 @@ import {
   Space,
   Row,
   Result,
+  Modal,
 } from 'antd';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { useDashBoardState } from '../../contexts/DashboardContext';
 import axios, { AxiosResponse } from 'axios';
 import { DeferFn, PromiseFn, useAsync } from 'react-async';
-import { getLogFileList } from '../../api/dashboard';
 import useAsyncAxios from '../../hooks/useAsyncAxios';
 import { join } from 'path';
+import { ModalCancel, ModalConfirm } from '../Modal/Modal';
+import { execFileDownload } from '../../api/download';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -31,15 +33,15 @@ export type LogFile = {
 
 export type LogFileList = LogFile[];
 
-const dataList: LogFileList = [];
-for (let i = 0; i < 49; i++) {
-  dataList.push({
-    key: `${i}`,
-    fileType: `tomcat`,
-    fileName: 'tomcat.log',
-    fileSize: `24 KB`,
-  });
-}
+// const dataList: LogFileList = [];
+// for (let i = 0; i < 49; i++) {
+//   dataList.push({
+//     key: `${i}`,
+//     fileType: `tomcat`,
+//     fileName: 'tomcat.log',
+//     fileSize: `24 KB`,
+//   });
+// }
 
 export enum LogType {
   LOGIN_OUT = 'login',
@@ -88,24 +90,34 @@ const logFilter = [
 //     .then(res => res.json())
 //     .then(({ data }) => data.first_name);
 
-const loadFirstName: DeferFn<any> = async (args: string[]) => {
-  // const { data } = await axios.get(`https://1reqres.in/api/users/${args[0]}`);
-  // console.log('axios_data', data);
-  // return data.data.first_name;
-
-  const { data } = await getLogFileList(args[0]);
-  return data;
-};
-
-const reqLogFileList = (id: string | null) => {
-  //return axios.get(`https://jsonplaceholder.typicode.com/users/${id}`);
-  return getLogFileList(id);
-};
+// const loadFirstName: DeferFn<any> = async (args: string[]) => {
+//   const { data } = await axios.get(`https://1reqres.in/api/users/${args[0]}`);
+//   console.log('axios_data', data);
+//   return data.data.first_name;
+// };
 
 const loadFileList = (device: string | null): Promise<AxiosResponse<any>> => {
   return axios.get(
     `https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files?device=${device}`,
   );
+};
+
+const geneDownloadStatus = async function* (func: () => any) {
+  while (true) {
+    const response = yield await func();
+    console.log('response', response);
+
+    if (response.status === 200) {
+      const { status } = response?.data;
+      if (status === 'done' || status === 'error') return response;
+    } else {
+      return response;
+    }
+
+    yield new Promise(resolve => {
+      setTimeout(resolve, 500);
+    });
+  }
 };
 
 function LogTable(): JSX.Element {
@@ -120,6 +132,7 @@ function LogTable(): JSX.Element {
   );
 
   const [fileList, setFileList] = useState<LogFileList>([]);
+  const cancel = useRef(false);
 
   useEffect(() => {
     const { lists } = listState?.data?.data || { lists: [] };
@@ -145,7 +158,7 @@ function LogTable(): JSX.Element {
     }
   }, [selected]);
 
-  const onClickDownload = () => {
+  const onRefersh = () => {
     listRefetch().then(r => r);
   };
 
@@ -187,6 +200,150 @@ function LogTable(): JSX.Element {
       }
     },
   };
+
+  const onDownloadFile2 = () => {
+    const selectedFileList = selectedRowKeys.reduce(
+      (acc: any, cur: React.Key, i) => {
+        console.log('acc', acc);
+        console.log('cur', cur);
+        const foundKey = fileList.find(list => list.key === cur);
+        if (foundKey) return foundKey;
+      },
+      [],
+    );
+
+    execFileDownload(selectedFileList, cancel);
+  };
+
+  const onDownloadFile = () => {
+    const selectedFileList = selectedRowKeys.reduce(
+      (acc: any, cur: React.Key, i) => {
+        console.log('acc', acc);
+        console.log('cur', cur);
+        const foundKey = fileList.find(list => list.key === cur);
+        if (foundKey) return foundKey;
+      },
+      [],
+    );
+
+    console.log('selectedfileList', selectedFileList);
+
+    const modal = Modal.confirm({
+      centered: true,
+    });
+    //ModalConfirm({
+    modal.update({
+      title: 'File Download',
+      content: 'Do you want to download files?',
+      onOk: async () => {
+        // Request Download => get download id
+        const {
+          data: { downloadId },
+        } = await axios.post(
+          'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files',
+          selectedFileList,
+        );
+
+        if (!downloadId) {
+          return;
+        }
+        console.log('downloadId', downloadId);
+        // Request Status
+        const statusFunc = () => {
+          return axios(
+            'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files/download/dl20201019',
+          );
+        };
+
+        const generator = async function* () {
+          while (true) {
+            const response = await axios(
+              'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files/download/dl20201019',
+            );
+
+            console.log('response', response);
+            if (response.status === 200) {
+              const { status } = response?.data;
+              console.log('status', status);
+              if (status === 'done' || status === 'error') yield response;
+              else yield response;
+            } else {
+              yield response;
+            }
+
+            yield new Promise(resolve => {
+              setTimeout(resolve, 500);
+            });
+          }
+        };
+
+        let i = 0;
+        await (async () => {
+          for await (const val of generator()) {
+            i++;
+            modal.update({
+              content: i,
+            });
+            if (cancel.current) break;
+            console.log('val', val);
+          }
+        })();
+
+        /*
+        const iterator: any = geneDownloadStatus(statusFunc);
+        const next = ({ value, done }: { value: any; done: any }) => {
+          console.log('[geneDownloadStatus]done', done);
+          // console.log(
+          //   '[geneDownloadStatus]cancelRef.current',
+          //   cancelRef.current,
+          // );
+
+          // if (cancelRef.current) {
+          //   return;
+          // }
+
+          if (done) {
+            console.log('[geneDownloadStatus]value', value);
+            if (value.status === 200) {
+              if (value.data.status === 'error') {
+                // openDownloadStatusError();
+                return;
+              }
+              // openDownloadComplete();
+            } else {
+              // openDownloadStatusError();
+              return;
+            }
+          } else {
+            console.log('[geneDownloadStatus]success');
+            value
+              .then((res: any) => {
+                console.log('[geneDownloadStatus]then.value', res);
+                // setDownStatus(res.data);
+                next(iterator.next(res));
+              })
+              .catch((err: any) => {
+                console.log('[geneDownloadStatus]error.value', err);
+                // next(iterator.next(err.response));
+              });
+          }
+        };
+
+        return next(iterator.next());
+
+        // Download Files
+
+        // return new Promise((resolve, reject) => {
+        //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+        // }).catch(() => console.log('Oops errors!'));
+         */
+      },
+      onCancel: () => {
+        cancel.current = true;
+      },
+    });
+  };
+
   return (
     // <Layout style={{ padding: '0 24px 24px' }}>
     <Layout>
@@ -210,12 +367,14 @@ function LogTable(): JSX.Element {
                 <Button
                   type="primary"
                   icon={<SyncOutlined style={{ verticalAlign: 0 }} />}
-                  onClick={onClickDownload}
+                  onClick={onRefersh}
                 >
                   Reload
                 </Button>
                 <Button
                   icon={<DownloadOutlined style={{ verticalAlign: 0 }} />}
+                  onClick={onDownloadFile2}
+                  disabled={selectedRowKeys.length <= 0}
                 >
                   Download
                 </Button>

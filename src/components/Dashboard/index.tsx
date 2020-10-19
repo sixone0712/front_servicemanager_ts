@@ -17,7 +17,6 @@ import {
 import styled from 'styled-components';
 import StatusTable from './StatusTable';
 import LogDownload from './LogDownload';
-import { getDeviceList } from '../../api/dashboard';
 import {
   loadDeviceList,
   useLDashBoardDispatch,

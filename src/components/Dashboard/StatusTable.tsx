@@ -17,7 +17,6 @@ import {
   useDashBoardState,
   useLDashBoardDispatch,
 } from '../../contexts/DashboardContext';
-import { getDeviceList } from '../../api/dashboard';
 import { stringify } from 'querystring';
 import { ModalConfirm } from '../Modal/Modal';
 
