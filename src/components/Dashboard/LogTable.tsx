@@ -97,9 +97,7 @@ const logFilter = [
 // };
 
 const loadFileList = (device: string | null): Promise<AxiosResponse<any>> => {
-  return axios.get(
-    `https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files?device=${device}`,
-  );
+  return axios.get(`http://localhost:3100/service/api/files?device=${device}`);
 };
 
 const geneDownloadStatus = async function* (func: () => any) {
@@ -203,13 +201,15 @@ function LogTable(): JSX.Element {
 
   const onDownloadFile2 = () => {
     const selectedFileList = selectedRowKeys.reduce(
-      (acc: any, cur: React.Key, i) => {
-        console.log('acc', acc);
-        console.log('cur', cur);
-        const foundKey = fileList.find(list => list.key === cur);
+      (previousValue: any, currentValue: any, currentIndex: any, array) => {
+        console.log('previousValue', previousValue);
+        console.log('currentValue', currentValue);
+        console.log('currentIndex', currentIndex);
+        console.log('array', array);
+        const foundKey = fileList.find(list => list.key === currentValue);
         if (foundKey) return foundKey;
       },
-      [],
+      {},
     );
 
     execFileDownload(selectedFileList, cancel);
@@ -240,7 +240,7 @@ function LogTable(): JSX.Element {
         const {
           data: { downloadId },
         } = await axios.post(
-          'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files',
+          'http://localhost:3100/service/api/files',
           selectedFileList,
         );
 
@@ -251,14 +251,14 @@ function LogTable(): JSX.Element {
         // Request Status
         const statusFunc = () => {
           return axios(
-            'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files/download/dl20201019',
+            'http:/localhost:3100/service/api/files/download/dl20201019',
           );
         };
 
         const generator = async function* () {
           while (true) {
             const response = await axios(
-              'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files/download/dl20201019',
+              'http://localhost:3100/service/api/files/download/dl20201019',
             );
 
             console.log('response', response);

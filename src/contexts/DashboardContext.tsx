@@ -124,7 +124,7 @@ export async function loadDeviceList(
   dispatch({ type: 'GET_DEVICE_LIST' });
   try {
     const response = await axios.get(
-      'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/devices',
+      'http://localhost:3100/service/api/devices',
     );
     dispatch({ type: 'GET_DEVICE_LIST_SUCCESS', data: response?.data?.lists });
   } catch (e) {

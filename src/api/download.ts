@@ -1,6 +1,21 @@
 import { Modal } from 'antd';
 import axios from 'axios';
 
+const requestDownloadId = async (selectedfileList: any) => {
+  try {
+    const {
+      data: { downloadId },
+    } = await axios.post(
+      'http://localhost:3100/service/api/files',
+      selectedfileList,
+    );
+    return downloadId;
+  } catch (e) {
+    console.error(e);
+    return '';
+  }
+};
+
 export const execFileDownload = (selectedfileList: any, cancel: any) => {
   const modal = Modal.confirm({
     centered: true,
@@ -11,12 +26,16 @@ export const execFileDownload = (selectedfileList: any, cancel: any) => {
     content: 'Do you want to download files?',
     onOk: async () => {
       // Request Download => get download id
-      const {
-        data: { downloadId },
-      } = await axios.post(
-        'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files',
-        selectedfileList,
-      );
+
+      // const {
+      //   data: { downloadId },
+      // } = await axios.post(
+      //   'http://localhost:3100/service/api/files',
+      //   selectedfileList,
+      // );
+
+      const downloadId = await requestDownloadId(selectedfileList);
+      console.log('downloadId', downloadId);
 
       if (!downloadId) {
         return;
@@ -25,43 +44,53 @@ export const execFileDownload = (selectedfileList: any, cancel: any) => {
       // Request Status
       const statusFunc = () => {
         return axios(
-          'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files/download/dl20201019',
+          'http://localhost:3100/service/api/files/download/dl20201019',
         );
       };
 
       const generator = async function* () {
         while (true) {
           const response = await axios(
-            'https://a1aca22c-c5d4-4414-9a2d-603e0cf3e8a4.mock.pstmn.io/service/api/files/download/dl20201019',
+            'http://localhost:3100/service/api/files/download/dl20201019',
           );
 
           console.log('response', response);
           if (response.status === 200) {
             const { status } = response?.data;
             console.log('status', status);
-            if (status === 'done' || status === 'error') yield response;
+            if (status === 'done' || status === 'error') return response;
             else yield response;
           } else {
-            yield response;
+            return response;
           }
 
           yield new Promise(resolve => {
-            setTimeout(resolve, 500);
+            setTimeout(resolve(response), 500);
           });
         }
       };
 
-      let i = 0;
-      await (async () => {
-        for await (const val of generator()) {
-          i++;
-          modal.update({
-            content: i,
-          });
-          if (cancel.current) break;
-          console.log('val', val);
-        }
-      })();
+      const test = generator();
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+      console.log(await test.next());
+
+      // await (async () => {
+      //   for await (const result of generator()) {
+      //     if (cancel.current) break;
+      //     console.log('result', result);
+      //   }
+      // })();
 
       /*
             const iterator: any = geneDownloadStatus(statusFunc);
