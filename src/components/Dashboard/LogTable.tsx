@@ -84,6 +84,11 @@ const logFilter = [
   },
 ];
 
+export type CancelInfo = {
+  downloadId: string | null;
+  cancel: boolean;
+};
+
 // const loadFirstName: PromiseFn<any> = ({ userId }) =>
 //   fetch(`https://reqres.in/api/users/${userId}`)
 //     .then(res => (res.ok ? Promise.resolve(res) : Promise.reject(res)))
@@ -130,7 +135,7 @@ function LogTable(): JSX.Element {
   );
 
   const [fileList, setFileList] = useState<LogFileList>([]);
-  const cancel = useRef(false);
+  const cancelInfo = useRef<CancelInfo>({ downloadId: null, cancel: false });
 
   useEffect(() => {
     const { lists } = listState?.data?.data || { lists: [] };
@@ -199,149 +204,25 @@ function LogTable(): JSX.Element {
     },
   };
 
-  const onDownloadFile2 = () => {
-    const selectedFileList = selectedRowKeys.reduce(
-      (previousValue: any, currentValue: any, currentIndex: any, array) => {
-        console.log('previousValue', previousValue);
-        console.log('currentValue', currentValue);
-        console.log('currentIndex', currentIndex);
-        console.log('array', array);
-        const foundKey = fileList.find(list => list.key === currentValue);
-        if (foundKey) return foundKey;
-      },
-      {},
-    );
-
-    execFileDownload(selectedFileList, cancel);
-  };
-
   const onDownloadFile = () => {
-    const selectedFileList = selectedRowKeys.reduce(
-      (acc: any, cur: React.Key, i) => {
-        console.log('acc', acc);
-        console.log('cur', cur);
-        const foundKey = fileList.find(list => list.key === cur);
-        if (foundKey) return foundKey;
-      },
-      [],
-    );
+    //
+    // const selectedFileList = selectedRowKeys.reduce(
+    //   (previousValue: any, currentValue: any, currentIndex: any, array) => {
+    //     console.log('previousValue', previousValue);
+    //     console.log('currentValue', currentValue);
+    //     console.log('currentIndex', currentIndex);
+    //     console.log('array', array);
+    //     const foundKey = fileList.find(list => list.key === currentValue);
+    //     if (foundKey) return foundKey;
+    //   },
+    //   {},
+    // );
 
-    console.log('selectedfileList', selectedFileList);
-
-    const modal = Modal.confirm({
-      centered: true,
+    const selectedFileList: LogFileList = fileList.filter(list => {
+      return selectedRowKeys.find(key => key === list.key) ? true : false;
     });
-    //ModalConfirm({
-    modal.update({
-      title: 'File Download',
-      content: 'Do you want to download files?',
-      onOk: async () => {
-        // Request Download => get download id
-        const {
-          data: { downloadId },
-        } = await axios.post(
-          'http://localhost:3100/service/api/files',
-          selectedFileList,
-        );
-
-        if (!downloadId) {
-          return;
-        }
-        console.log('downloadId', downloadId);
-        // Request Status
-        const statusFunc = () => {
-          return axios(
-            'http:/localhost:3100/service/api/files/download/dl20201019',
-          );
-        };
-
-        const generator = async function* () {
-          while (true) {
-            const response = await axios(
-              'http://localhost:3100/service/api/files/download/dl20201019',
-            );
-
-            console.log('response', response);
-            if (response.status === 200) {
-              const { status } = response?.data;
-              console.log('status', status);
-              if (status === 'done' || status === 'error') yield response;
-              else yield response;
-            } else {
-              yield response;
-            }
-
-            yield new Promise(resolve => {
-              setTimeout(resolve, 500);
-            });
-          }
-        };
-
-        let i = 0;
-        await (async () => {
-          for await (const val of generator()) {
-            i++;
-            modal.update({
-              content: i,
-            });
-            if (cancel.current) break;
-            console.log('val', val);
-          }
-        })();
-
-        /*
-        const iterator: any = geneDownloadStatus(statusFunc);
-        const next = ({ value, done }: { value: any; done: any }) => {
-          console.log('[geneDownloadStatus]done', done);
-          // console.log(
-          //   '[geneDownloadStatus]cancelRef.current',
-          //   cancelRef.current,
-          // );
-
-          // if (cancelRef.current) {
-          //   return;
-          // }
-
-          if (done) {
-            console.log('[geneDownloadStatus]value', value);
-            if (value.status === 200) {
-              if (value.data.status === 'error') {
-                // openDownloadStatusError();
-                return;
-              }
-              // openDownloadComplete();
-            } else {
-              // openDownloadStatusError();
-              return;
-            }
-          } else {
-            console.log('[geneDownloadStatus]success');
-            value
-              .then((res: any) => {
-                console.log('[geneDownloadStatus]then.value', res);
-                // setDownStatus(res.data);
-                next(iterator.next(res));
-              })
-              .catch((err: any) => {
-                console.log('[geneDownloadStatus]error.value', err);
-                // next(iterator.next(err.response));
-              });
-          }
-        };
-
-        return next(iterator.next());
-
-        // Download Files
-
-        // return new Promise((resolve, reject) => {
-        //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
-        // }).catch(() => console.log('Oops errors!'));
-         */
-      },
-      onCancel: () => {
-        cancel.current = true;
-      },
-    });
+    console.log('selectedFileList', selectedFileList);
+    execFileDownload(selectedFileList, cancelInfo);
   };
 
   return (
@@ -373,7 +254,7 @@ function LogTable(): JSX.Element {
                 </Button>
                 <Button
                   icon={<DownloadOutlined style={{ verticalAlign: 0 }} />}
-                  onClick={onDownloadFile2}
+                  onClick={onDownloadFile}
                   disabled={selectedRowKeys.length <= 0}
                 >
                   Download
