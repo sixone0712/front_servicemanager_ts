@@ -4,10 +4,12 @@ import { CancelInfo, LogFileList } from '../components/Dashboard/LogTable';
 import React from 'react';
 import { WritableStream } from 'web-streams-polyfill/ponyfill';
 import streamSaver from 'streamsaver';
+import { openNotification } from './notification';
 
 const requestDownloadId = async (
   selectedFileList: LogFileList,
 ): Promise<string | null> => {
+  console.log('[requestDownloadId]selectedFileList', selectedFileList);
   try {
     const {
       data: { downloadId },
@@ -86,13 +88,13 @@ export const execFileDownload = (
       }
 
       console.log('data', data);
-      const { status } = data?.value?.data;
+      const { status, url } = data?.value?.data;
       console.log('status', status);
       if (status) {
         if (status === 'done') {
           // get downloadurl
           //alert('get downloadurl');
-          downloadFile('http://localhost:3100/service/api/files/store/dsfdf');
+          downloadFile(url);
         } else if (status === 'error') {
           //download error
           alert('download error');
@@ -148,6 +150,15 @@ const downloadFile = (url: string) => {
     //body: JSON.stringify(data),
   })
     .then(response => {
+      if (!response.ok) {
+        openNotification(
+          'error',
+          'Netwrok Error',
+          'The request failed due to an internal server error.',
+        );
+        return;
+      }
+
       const contentDisposition = response.headers.get('Content-Disposition');
       console.log('contentDisposition', contentDisposition);
       const fileName: string =

@@ -32,9 +32,12 @@ function Login(): JSX.Element {
             className="absolute top-0 w-full h-full bg-gray-900"
             style={{
               backgroundSize: '100%',
-              background:
-                'linear-gradient(135deg, #b3cae5 12%, #dbdde4 46%, #e4e3e4 70%, #f7ddbb 94%, #efcab2 100%)',
-              backgroundRepeat: 'no-repeat',
+              // background:
+              //   'linear-gradient(135deg, #b3cae5 12%, #dbdde4 46%, #e4e3e4 70%, #f7ddbb 94%, #efcab2 100%)',
+              // backgroundRepeat: 'no-repeat',
+              backgroundColor: '#485461',
+              backgroundImage:
+                'linear-gradient(315deg, #485461 0%, #28313b 74%)',
             }}
           />
           <div className="container mx-auto px-10 h-full">

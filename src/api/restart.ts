@@ -1,8 +1,9 @@
 import React from 'react';
 import { Modal } from 'antd';
 import axios from 'axios';
+import { openNotification } from './notification';
 
-export const execDockerRestart = (device: string) => {
+export const execDockerRestart = (device: string, onRefresh: () => void) => {
   const modal = Modal.confirm({
     centered: true,
   });
@@ -10,7 +11,7 @@ export const execDockerRestart = (device: string) => {
   modal.update({
     title: 'Docker Restart',
     // icon: <ExclamationCircleOutlined />,
-    content: `Do you want to restart ${device}'s Docker?`,
+    content: `Do you want to restart the docker of ${device}?`,
     onOk: async () => {
       modal.update({
         cancelButtonProps: { disabled: true },
@@ -20,7 +21,19 @@ export const execDockerRestart = (device: string) => {
         const { data } = await axios.get(
           'http://localhost:3100/service/api/restart/docker?device=ESP_01',
         );
-      } catch (e) {}
+        openNotification(
+          'success',
+          'Success',
+          `the docker of ${device} restart was successful.`,
+        );
+        onRefresh();
+      } catch (e) {
+        openNotification(
+          'error',
+          'Error',
+          `the docker of ${device} restart was failed.`,
+        );
+      }
     },
   });
 };

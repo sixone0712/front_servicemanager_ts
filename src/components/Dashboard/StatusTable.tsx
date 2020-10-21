@@ -172,7 +172,7 @@ function StatusTable(): JSX.Element {
   };
 
   const onDockerRestart = (text: string) => {
-    execDockerRestart(text);
+    execDockerRestart(text, onRefresh);
     // ModalConfirm({
     //   title: 'Docker Restart',
     //   content: 'Do you want to restart Docker?',
