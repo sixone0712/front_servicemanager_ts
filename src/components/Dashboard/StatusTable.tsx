@@ -9,6 +9,7 @@ import {
   Layout,
   Breadcrumb,
   Button,
+  Modal,
 } from 'antd';
 import { RedoOutlined, SyncOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
@@ -19,6 +20,9 @@ import {
 } from '../../contexts/DashboardContext';
 import { stringify } from 'querystring';
 import { ModalConfirm } from '../Modal/Modal';
+import OsRestartModal from './OsRestartModal';
+import axios from 'axios';
+import { execDockerRestart } from '../../api/restart';
 
 const { Column, ColumnGroup } = Table;
 
@@ -139,6 +143,8 @@ function StatusTable(): JSX.Element {
     deviceInfo: { list, success, error, failure, pending, selected },
   } = useDashBoardState();
   const dispatch = useLDashBoardDispatch();
+  const [osModalVisible, setOsModalVisible] = useState(false);
+  const [targetDevice, setTargetDevice] = useState<string | null>(null);
 
   const onRefresh = () => {
     loadDeviceList(dispatch).then(r => r);
@@ -149,9 +155,10 @@ function StatusTable(): JSX.Element {
     record: DockerStatus,
     index: number,
   ) => {
-    // console.log('name', text);
-    // console.log('record', record);
-    // console.log('index', index);
+    console.log('DockerRender');
+    console.log('name', text);
+    console.log('record', record);
+    console.log('index', index);
     return (
       <>
         {text.map(item => (
@@ -164,17 +171,22 @@ function StatusTable(): JSX.Element {
     );
   };
 
-  const onDockerRestart = () => {
-    ModalConfirm({
-      title: 'Docker Restart',
-      content: 'Do you want to restart Docker?',
-      onOk: () => {
-        return new Promise((resolve, reject) => {
-          setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
-        }).catch(() => console.log('Oops errors!'));
-      },
-      onCancel: () => {},
-    });
+  const onDockerRestart = (text: string) => {
+    execDockerRestart(text);
+    // ModalConfirm({
+    //   title: 'Docker Restart',
+    //   content: 'Do you want to restart Docker?',
+    //   onOk: () => {
+    //     return new Promise((resolve, reject) => {
+    //       setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+    //     }).catch(() => console.log('Oops errors!'));
+    //   },
+    //   onCancel: () => {},
+    // });
+  };
+
+  const onOsRestart = (text: string) => {
+    setOsModalVisible(true);
   };
 
   return (
@@ -234,34 +246,48 @@ function StatusTable(): JSX.Element {
         />
         <Column
           title="Docker Restart"
-          dataIndex="dockerRestart"
-          key="dockerRestart"
+          dataIndex="name"
+          key="name"
           align="center"
           width="15%"
           render={(text, record, index) => {
-            return <RedoOutlined onClick={onDockerRestart} />;
+            return (
+              <RedoOutlined
+                onClick={() => {
+                  setTargetDevice(text);
+                  onDockerRestart(text);
+                }}
+              />
+            );
           }}
         />
         <Column
           title="OS Restart"
-          dataIndex="osRestart"
-          key="osRestart"
+          dataIndex="name"
+          key="name"
           align="center"
           width="15%"
           render={(text, record, index) => {
-            // console.log('name', text);
-            // console.log('record', record);
-            // console.log('index', index);
+            console.log('OSRender');
+            console.log('text', text);
+            console.log('record', record);
+            console.log('index', index);
             return (
               <RedoOutlined
                 onClick={() => {
-                  alert('restart');
+                  setTargetDevice(text);
+                  onOsRestart(text);
                 }}
               />
             );
           }}
         />
       </Table>
+      <OsRestartModal
+        visible={osModalVisible}
+        setVisible={setOsModalVisible}
+        targetDevice={targetDevice}
+      />
     </Layout>
   );
 }

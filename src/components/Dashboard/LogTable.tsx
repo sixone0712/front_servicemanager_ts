@@ -105,24 +105,6 @@ const loadFileList = (device: string | null): Promise<AxiosResponse<any>> => {
   return axios.get(`http://localhost:3100/service/api/files?device=${device}`);
 };
 
-const geneDownloadStatus = async function* (func: () => any) {
-  while (true) {
-    const response = yield await func();
-    console.log('response', response);
-
-    if (response.status === 200) {
-      const { status } = response?.data;
-      if (status === 'done' || status === 'error') return response;
-    } else {
-      return response;
-    }
-
-    yield new Promise(resolve => {
-      setTimeout(resolve, 500);
-    });
-  }
-};
-
 function LogTable(): JSX.Element {
   const {
     deviceInfo: { list, success, error, failure, pending, selected },
