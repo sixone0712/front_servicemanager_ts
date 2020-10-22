@@ -19,7 +19,7 @@ export const execDockerRestart = (device: string, onRefresh: () => void) => {
 
       try {
         const { data } = await axios.get(
-          'http://localhost:3100/service/api/restart/docker?device=ESP_01',
+          `http://localhost:3100/servicemanager/api/restart/docker?device=${device}`,
         );
         openNotification(
           'success',

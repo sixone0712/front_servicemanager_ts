@@ -49,7 +49,7 @@ const OsRestartModal = ({
         try {
           setConfirmLoading(true);
           const { data } = await axios.get(
-            'http://localhost:3100/service/api/restart/os?device=ESP_01',
+            'http://localhost:3100/servicemanager/api/restart/os?device=ESP_01',
           );
 
           if (data.result === 'success') {

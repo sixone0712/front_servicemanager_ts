@@ -2,14 +2,14 @@ import React from 'react';
 import { Layout, Menu } from 'antd';
 import {
   useDashBoardState,
-  useLDashBoardDispatch,
+  useDashBoardDispatch,
 } from '../../contexts/DashboardContext';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
 function LogSider(): JSX.Element {
-  const dispatch = useLDashBoardDispatch();
+  const dispatch = useDashBoardDispatch();
   const {
     deviceInfo: { list, success, error, failure, pending, selected },
   } = useDashBoardState();

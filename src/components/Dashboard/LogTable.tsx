@@ -102,7 +102,9 @@ export type CancelInfo = {
 // };
 
 const loadFileList = (device: string | null): Promise<AxiosResponse<any>> => {
-  return axios.get(`http://localhost:3100/service/api/files?device=${device}`);
+  return axios.get(
+    `http://localhost:3100/servicemanager/api/files?device=${device}`,
+  );
 };
 
 function LogTable(): JSX.Element {
@@ -238,6 +240,8 @@ function LogTable(): JSX.Element {
                   icon={<DownloadOutlined style={{ verticalAlign: 0 }} />}
                   onClick={onDownloadFile}
                   disabled={selectedRowKeys.length <= 0}
+                  type="primary"
+                  danger
                 >
                   Download
                 </Button>

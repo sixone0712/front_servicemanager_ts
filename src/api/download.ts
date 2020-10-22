@@ -14,7 +14,7 @@ const requestDownloadId = async (
     const {
       data: { downloadId },
     } = await axios.post(
-      'http://localhost:3100/service/api/files',
+      'http://localhost:3100/servicemanager/api/files',
       selectedFileList,
     );
     return downloadId;
@@ -27,7 +27,7 @@ const statusGenerator: any = async function* (downloadId: string) {
   while (true) {
     try {
       const response = await axios.get(
-        `http://localhost:3100/service/api/files/download/${downloadId}`,
+        `http://localhost:3100/servicemanager/api/files/download/${downloadId}`,
       );
       console.log('response', response);
       if (response.status === 200) {
@@ -129,7 +129,7 @@ export const execFileDownload = (
       cancelInfo.current.cancel = true;
       try {
         const response = await axios.delete(
-          `http://localhost:3100/service/api/files/download/${cancelInfo.current.downloadId}`,
+          `http://localhost:3100/servicemanager/api/files/download/${cancelInfo.current.downloadId}`,
         );
       } catch (e) {
         // network error

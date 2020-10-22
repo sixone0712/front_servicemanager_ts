@@ -69,8 +69,38 @@ function dashBoardReducer(
         draft.deviceInfo.pending = false;
         draft.deviceInfo.success = true;
         draft.deviceInfo.failure = false;
-        draft.deviceInfo.list = action.data;
         draft.deviceInfo.error = null;
+        draft.deviceInfo.list =
+          action.data?.map(
+            (item: {
+              volumeUsed: string | null;
+              volumeTotal: string | null;
+              name: string | null;
+              type: string | null;
+              host: string | null;
+              containers: any;
+            }) => {
+              const status = item.containers.map((container: any) => {
+                return `${container.name} (${container.status.replace(
+                  /\(.\)\s/g,
+                  '',
+                )})`;
+              });
+
+              return {
+                key: item.name,
+                name: item.name,
+                type: item.type,
+                ip: item.host,
+                status: status,
+                volume:
+                  item.volumeUsed === 'Unknown' ||
+                  item.volumeTotal === 'Unknown'
+                    ? 'Unknown'
+                    : `${item.volumeUsed} / ${item.volumeTotal}`,
+              };
+            },
+          ) || [];
       });
     case 'GET_DEVICE_LIST_FAILURE':
       return produce(state, draft => {
@@ -112,7 +142,7 @@ export function useDashBoardState(): DashBoardState {
   return state;
 }
 
-export function useLDashBoardDispatch(): React.Dispatch<DashBoardAction> {
+export function useDashBoardDispatch(): React.Dispatch<DashBoardAction> {
   const dispatch = useContext(DashBoardDispatchContext);
   if (!dispatch) throw new Error('DashBoardDispatchContext not found');
   return dispatch;
@@ -124,9 +154,9 @@ export async function loadDeviceList(
   dispatch({ type: 'GET_DEVICE_LIST' });
   try {
     const response = await axios.get(
-      'http://localhost:3100/service/api/devices',
+      'http://localhost:3100/servicemanager/api/system',
     );
-    dispatch({ type: 'GET_DEVICE_LIST_SUCCESS', data: response?.data?.lists });
+    dispatch({ type: 'GET_DEVICE_LIST_SUCCESS', data: response?.data?.list });
   } catch (e) {
     dispatch({ type: 'GET_DEVICE_LIST_FAILURE', error: e });
   }

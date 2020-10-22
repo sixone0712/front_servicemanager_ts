@@ -19,42 +19,17 @@ import StatusTable from './StatusTable';
 import LogDownload from './LogDownload';
 import {
   loadDeviceList,
-  useLDashBoardDispatch,
+  useDashBoardDispatch,
 } from '../../contexts/DashboardContext';
 // import './Dashboard.css';
 import axios from 'axios';
+import DashboardHeader from './DashboardHeader';
 
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
 
-const HeaderTitle = styled.div`
-  /* width: 120px;
-  height: 31px;
-  margin: 16px 28px 16px 0;
-  float: left;
-  line-height: 31px; */
-  color: white;
-  font-size: 20px;
-`;
-
-const menu: JSX.Element = (
-  <Menu>
-    <Menu.Item
-      key="0"
-      onClick={() => {
-        alert('로그아웃');
-      }}
-    >
-      LogOut
-      {/* <a href="http://www.alipay.com/">1st menu item</a> */}
-    </Menu.Item>
-    <Menu.Divider />
-    <Menu.Item key="1">2nd menu item</Menu.Item>
-  </Menu>
-);
-
 function Dashboard(): JSX.Element {
-  const dispatch = useLDashBoardDispatch();
+  const dispatch = useDashBoardDispatch();
 
   useEffect(() => {
     loadDeviceList(dispatch).then(r => r);
@@ -63,27 +38,7 @@ function Dashboard(): JSX.Element {
   return (
     <>
       <Layout>
-        <Header>
-          <Row justify="space-between" style={{ minWidth: '1050px' }}>
-            <Col>
-              <HeaderTitle>Service Manager</HeaderTitle>
-            </Col>
-            {/*
-            <Menu theme="dark" mode="horizontal">
-              <Menu.Item key="1">nav 1</Menu.Item>
-            </Menu> 
-            */}
-            <Col>
-              <Dropdown overlay={menu} trigger={['click']}>
-                <a onClick={e => e.preventDefault()}>
-                  <Avatar
-                    icon={<UserOutlined style={{ verticalAlign: 0 }} />}
-                  />
-                </a>
-              </Dropdown>
-            </Col>
-          </Row>
-        </Header>
+        <DashboardHeader />
         <Content>
           <Layout>
             <Content style={{ padding: '0 100px', minHeight: 280 }}>
@@ -99,7 +54,21 @@ function Dashboard(): JSX.Element {
             </Content>
           </Layout>
         </Content>
-        <Footer />
+        <Divider plain style={{ marginBottom: 0 }} />
+        {/*<Footer style={{ height: '40px', lineHeight: '40px' }}>*/}
+        <Footer
+          style={{
+            minWidth: '1050px',
+            height: '50px',
+            paddingTop: 0,
+            paddingBottom: 0,
+            backgroundColor: 'white',
+          }}
+        >
+          <Row justify={'end'} align={'middle'} style={{ height: '50px' }}>
+            <Col>Copyright CANON INC. 2020</Col>
+          </Row>
+        </Footer>
       </Layout>
     </>
   );
