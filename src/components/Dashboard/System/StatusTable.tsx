@@ -17,12 +17,11 @@ import {
   loadDeviceList,
   useDashBoardState,
   useDashBoardDispatch,
-} from '../../contexts/DashboardContext';
+} from '../../../contexts/DashboardContext';
 import { stringify } from 'querystring';
-import { ModalConfirm } from '../Modal/Modal';
 import OsRestartModal from './OsRestartModal';
 import axios from 'axios';
-import { execDockerRestart } from '../../api/restart';
+import { execDockerRestart } from '../../../api/restart';
 import { BsFillCircleFill } from 'react-icons/bs';
 
 const { Column, ColumnGroup } = Table;
@@ -99,7 +98,8 @@ function StatusTable(): JSX.Element {
   return (
     <Layout style={{ height: '360px', minWidth: '950px' }}>
       <Breadcrumb style={{ margin: '10px 0' }}>
-        <Breadcrumb.Item>DashBoard</Breadcrumb.Item>
+        <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
+        <Breadcrumb.Item>System</Breadcrumb.Item>
         <Breadcrumb.Item>Device Status</Breadcrumb.Item>
       </Breadcrumb>
       <Row justify="end" style={{ marginBottom: '10px' }}>

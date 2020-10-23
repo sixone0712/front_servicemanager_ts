@@ -1,6 +1,7 @@
 import React, { createContext, Dispatch, useContext, useReducer } from 'react';
 import produce from 'immer';
 import axios from 'axios';
+import * as DEFINE from '../define';
 
 export type Device = {
   key: string;
@@ -70,6 +71,7 @@ function dashBoardReducer(
         draft.deviceInfo.success = true;
         draft.deviceInfo.failure = false;
         draft.deviceInfo.error = null;
+        console.log('action.data', action.data);
         draft.deviceInfo.list =
           action.data?.map(
             (item: {
@@ -80,9 +82,9 @@ function dashBoardReducer(
               host: string | null;
               containers: any;
             }) => {
-              const status = item.containers.map((container: any) => {
+              const status = item.containers?.map((container: any) => {
                 return `${container.name} (${container.status.replace(
-                  /\(.\)\s/g,
+                  /\(.+\)\s/g,
                   '',
                 )})`;
               });
@@ -153,9 +155,7 @@ export async function loadDeviceList(
 ) {
   dispatch({ type: 'GET_DEVICE_LIST' });
   try {
-    const response = await axios.get(
-      'http://localhost:3100/servicemanager/api/system',
-    );
+    const response = await axios.get(DEFINE.URL_SYSTEM);
     dispatch({ type: 'GET_DEVICE_LIST_SUCCESS', data: response?.data?.list });
   } catch (e) {
     dispatch({ type: 'GET_DEVICE_LIST_FAILURE', error: e });

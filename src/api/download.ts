@@ -1,10 +1,14 @@
 import { Modal } from 'antd';
 import axios from 'axios';
-import { CancelInfo, LogFileList } from '../components/Dashboard/LogTable';
+import {
+  CancelInfo,
+  LogFileList,
+} from '../components/Dashboard/System/LogTable';
 import React from 'react';
 import { WritableStream } from 'web-streams-polyfill/ponyfill';
 import streamSaver from 'streamsaver';
 import { openNotification } from './notification';
+import * as DEFINE from '../define';
 
 const requestDownloadId = async (
   selectedFileList: LogFileList,
@@ -13,10 +17,7 @@ const requestDownloadId = async (
   try {
     const {
       data: { downloadId },
-    } = await axios.post(
-      'http://localhost:3100/servicemanager/api/files',
-      selectedFileList,
-    );
+    } = await axios.post(DEFINE.URL_DEBUG_LOG_FILES, selectedFileList);
     return downloadId;
   } catch (e) {
     console.error(e);
@@ -27,7 +28,7 @@ const statusGenerator: any = async function* (downloadId: string) {
   while (true) {
     try {
       const response = await axios.get(
-        `http://localhost:3100/servicemanager/api/files/download/${downloadId}`,
+        `${DEFINE.URL_DEBUG_LOG_FILES_DOWNLOAD}/${downloadId}`,
       );
       console.log('response', response);
       if (response.status === 200) {
@@ -129,7 +130,7 @@ export const execFileDownload = (
       cancelInfo.current.cancel = true;
       try {
         const response = await axios.delete(
-          `http://localhost:3100/servicemanager/api/files/download/${cancelInfo.current.downloadId}`,
+          `${DEFINE.URL_DEBUG_LOG_FILES_DOWNLOAD}/${cancelInfo.current.downloadId}`,
         );
       } catch (e) {
         // network error

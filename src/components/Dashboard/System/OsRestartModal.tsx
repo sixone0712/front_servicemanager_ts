@@ -6,8 +6,9 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
+import * as DEFINE from '../../../define';
 
-const title = (
+const title: JSX.Element = (
   <Row>
     <Col>
       <ExclamationCircleOutlined
@@ -49,7 +50,7 @@ const OsRestartModal = ({
         try {
           setConfirmLoading(true);
           const { data } = await axios.get(
-            'http://localhost:3100/servicemanager/api/restart/os?device=ESP_01',
+            `${DEFINE.URL_OS_RESTRART}?device=${targetDevice}`,
           );
 
           if (data.result === 'success') {

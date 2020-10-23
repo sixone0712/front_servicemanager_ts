@@ -1,8 +1,6 @@
 import React from 'react';
-import { Avatar, Col, Dropdown, Layout, Menu, Row, Space } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Col, Dropdown, Layout, Menu, Row, Space } from 'antd';
 import styled from 'styled-components';
-import { RowProps } from 'antd/lib/row';
 
 import { FaUserCircle } from 'react-icons/fa';
 

@@ -1,74 +1,38 @@
-import React, { useEffect } from 'react';
-import {
-  Layout,
-  Menu,
-  Breadcrumb,
-  Divider,
-  Avatar,
-  Row,
-  Col,
-  Dropdown,
-} from 'antd';
-import {
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-} from '@ant-design/icons';
-import styled from 'styled-components';
-import StatusTable from './StatusTable';
-import LogDownload from './LogDownload';
-import {
-  loadDeviceList,
-  useDashBoardDispatch,
-} from '../../contexts/DashboardContext';
-// import './Dashboard.css';
-import axios from 'axios';
-import DashboardHeader from './DashboardHeader';
+import React from 'react';
+import { Route, Switch, Redirect } from 'react-router-dom';
+import DashboardHeader from './Header/DashboardHeader';
+import SystemInfo from './System';
+import { Col, Layout, Row } from 'antd';
+import NotFound from '../../pages/404';
 
-const { SubMenu } = Menu;
-const { Header, Content, Footer, Sider } = Layout;
+const { Footer } = Layout;
+
+const DashboardFooter = (): JSX.Element => (
+  <Footer
+    style={{
+      minWidth: '1050px',
+      height: '50px',
+      paddingTop: 0,
+      paddingBottom: 0,
+      backgroundColor: 'white',
+    }}
+  >
+    <Row justify={'end'} align={'middle'} style={{ height: '50px' }}>
+      <Col>Copyright CANON INC. 2020</Col>
+    </Row>
+  </Footer>
+);
 
 function Dashboard(): JSX.Element {
-  const dispatch = useDashBoardDispatch();
-
-  useEffect(() => {
-    loadDeviceList(dispatch).then(r => r);
-  }, []);
-
   return (
     <>
       <Layout>
         <DashboardHeader />
-        <Content>
-          <Layout>
-            <Content style={{ padding: '0 100px', minHeight: 280 }}>
-              <StatusTable />
-            </Content>
-          </Layout>
-        </Content>
-        <Divider plain style={{ marginTop: 0 }} />
-        <Content>
-          <Layout>
-            <Content style={{ padding: '0 100px', minHeight: 280 }}>
-              <LogDownload />
-            </Content>
-          </Layout>
-        </Content>
-        <Divider plain style={{ marginBottom: 0 }} />
-        {/*<Footer style={{ height: '40px', lineHeight: '40px' }}>*/}
-        <Footer
-          style={{
-            minWidth: '1050px',
-            height: '50px',
-            paddingTop: 0,
-            paddingBottom: 0,
-            backgroundColor: 'white',
-          }}
-        >
-          <Row justify={'end'} align={'middle'} style={{ height: '50px' }}>
-            <Col>Copyright CANON INC. 2020</Col>
-          </Row>
-        </Footer>
+        <Switch>
+          <Route path="/dashboard/system" component={SystemInfo} />
+          <Redirect path="*" to="/notfound" />
+        </Switch>
+        <DashboardFooter />
       </Layout>
     </>
   );

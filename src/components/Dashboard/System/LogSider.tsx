@@ -3,7 +3,9 @@ import { Layout, Menu } from 'antd';
 import {
   useDashBoardState,
   useDashBoardDispatch,
-} from '../../contexts/DashboardContext';
+  DeviceList,
+} from '../../../contexts/DashboardContext';
+import { DatabaseOutlined } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -68,7 +70,12 @@ function LogSider(): JSX.Element {
         <Menu.Item key="11">option11</Menu.Item>
         <Menu.Item key="12">option12</Menu.Item> */}
         {list?.map(device => (
-          <Menu.Item key={device.key}>{device.name}</Menu.Item>
+          <Menu.Item
+            icon={<DatabaseOutlined style={{ verticalAlign: 0 }} />}
+            key={device.key}
+          >
+            {device.name}
+          </Menu.Item>
         ))}
       </Menu>
     </Sider>

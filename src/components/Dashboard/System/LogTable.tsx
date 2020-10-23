@@ -12,13 +12,13 @@ import {
 } from 'antd';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { TableRowSelection } from 'antd/es/table/interface';
-import { useDashBoardState } from '../../contexts/DashboardContext';
+import { useDashBoardState } from '../../../contexts/DashboardContext';
 import axios, { AxiosResponse } from 'axios';
 import { DeferFn, PromiseFn, useAsync } from 'react-async';
-import useAsyncAxios from '../../hooks/useAsyncAxios';
+import useAsyncAxios from '../../../hooks/useAsyncAxios';
 import { join } from 'path';
-import { ModalCancel, ModalConfirm } from '../Modal/Modal';
-import { execFileDownload } from '../../api/download';
+import { execFileDownload } from '../../../api/download';
+import * as DEFINE from '../../../define';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -102,9 +102,7 @@ export type CancelInfo = {
 // };
 
 const loadFileList = (device: string | null): Promise<AxiosResponse<any>> => {
-  return axios.get(
-    `http://localhost:3100/servicemanager/api/files?device=${device}`,
-  );
+  return axios.get(`${DEFINE.URL_DEBUG_LOG_FILES}?device=${device}`);
 };
 
 function LogTable(): JSX.Element {
@@ -220,7 +218,8 @@ function LogTable(): JSX.Element {
         }}
       >
         <Breadcrumb style={{ margin: '10px 0' }}>
-          <Breadcrumb.Item>DashBoard</Breadcrumb.Item>
+          <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
+          <Breadcrumb.Item>System</Breadcrumb.Item>
           <Breadcrumb.Item>Log Download</Breadcrumb.Item>
           {selected && <Breadcrumb.Item>{selected}</Breadcrumb.Item>}
         </Breadcrumb>

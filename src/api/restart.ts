@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal } from 'antd';
 import axios from 'axios';
 import { openNotification } from './notification';
+import * as DEFINE from '../define';
 
 export const execDockerRestart = (device: string, onRefresh: () => void) => {
   const modal = Modal.confirm({
@@ -18,8 +19,8 @@ export const execDockerRestart = (device: string, onRefresh: () => void) => {
       });
 
       try {
-        const { data } = await axios.get(
-          `http://localhost:3100/servicemanager/api/restart/docker?device=${device}`,
+        const { data } = await axios.post(
+          `${DEFINE.URL_DOCKER_RESTART}?device=${device}`,
         );
         openNotification(
           'success',

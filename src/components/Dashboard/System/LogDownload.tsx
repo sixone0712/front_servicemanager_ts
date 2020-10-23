@@ -5,12 +5,10 @@ import LogTable from './LogTable';
 
 function LogDownload(): JSX.Element {
   return (
-    // <Layout style={{ paddingLeft: '24px', height: '450px' }}>
     <Layout style={{ minWidth: '950px' }}>
       <LogSider />
       <LogTable />
     </Layout>
-    // </Layout>
   );
 }
 
