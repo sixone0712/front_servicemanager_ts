@@ -3,6 +3,7 @@ import { Col, Dropdown, Layout, Menu, Row, Space } from 'antd';
 import styled from 'styled-components';
 
 import { FaUserCircle } from 'react-icons/fa';
+import { useHistory } from 'react-router-dom';
 
 const { Header } = Layout;
 
@@ -36,29 +37,30 @@ const UserName = styled(Col)`
   height: 35px;
 `;
 
-const menu: JSX.Element = (
-  <Menu>
-    <Menu.Item
-      key="0"
-      onClick={() => {
-        alert('로그아웃');
-      }}
-    >
-      LogOut
-      {/* <a href="http://www.alipay.com/">1st menu item</a> */}
-    </Menu.Item>
-    <Menu.Divider />
-    <Menu.Item key="1">2nd menu item</Menu.Item>
-  </Menu>
-);
+const menu = (history: any) => {
+  return (
+    <Menu>
+      <Menu.Item
+        key="0"
+        onClick={() => {
+          history.push('/login2');
+        }}
+      >
+        LogOut
+        {/* <a href="http://www.alipay.com/">1st menu item</a> */}
+      </Menu.Item>
+    </Menu>
+  );
+};
 
 function DashboardHeader(): JSX.Element {
+  const history = useHistory();
   return (
     <BoardHeader>
       <HeaderRow justify="space-between" align="middle">
         <Title>Service Manager</Title>
         <User>
-          <Dropdown overlay={menu} trigger={['click']}>
+          <Dropdown overlay={() => menu(history)} trigger={['click']}>
             <a onClick={e => e.preventDefault()}>
               <Row align={'middle'}>
                 <Space>
