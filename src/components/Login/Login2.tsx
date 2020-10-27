@@ -63,6 +63,7 @@ function Login2() {
       <Row justify="center" align="middle" style={{ height: '100vh' }}>
         <Col>
           <Form
+            form={form}
             name="normal_login"
             className="login-form"
             initialValues={{ remember: true }}

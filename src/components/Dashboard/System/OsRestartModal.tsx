@@ -36,6 +36,42 @@ const OsRestartModal = ({
   console.log('id', id);
   console.log('password', password);
 
+  const onFinish = async () => {
+    try {
+      setConfirmLoading(true);
+      const { data } = await axios.post(
+        `${DEFINE.URL_OS_RESTRART}?device=${targetDevice}`,
+        {
+          id: id,
+          password: password,
+        },
+      );
+
+      if (data.result === 'success') {
+        // success
+        alert('재기동 성공 몇분 후에 페이지를 리로드 해봐');
+      } else {
+        // error
+        alert('유저 ID 패스워드 확인');
+      }
+    } catch (e) {
+      console.error(e);
+      // network error
+    } finally {
+      form.resetFields();
+      setId('');
+      setPassword('');
+      setConfirmLoading(false);
+      setVisible(false);
+    }
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onFinish();
+    }
+  };
+
   return (
     <Modal
       visible={visible}
@@ -46,29 +82,7 @@ const OsRestartModal = ({
       width={416}
       okType={'primary'}
       confirmLoading={confirmLoading}
-      onOk={async () => {
-        try {
-          setConfirmLoading(true);
-          const { data } = await axios.get(
-            `${DEFINE.URL_OS_RESTRART}?device=${targetDevice}`,
-          );
-
-          if (data.result === 'success') {
-            // success
-          } else {
-            // error
-          }
-        } catch (e) {
-          console.error(e);
-          // network error
-        } finally {
-          form.resetFields();
-          setId('');
-          setPassword('');
-          setConfirmLoading(false);
-          setVisible(false);
-        }
-      }}
+      onOk={onFinish}
       okButtonProps={{ disabled: id === '' || password === '' }}
       cancelButtonProps={{ disabled: confirmLoading }}
       onCancel={() => setVisible(false)}
@@ -104,6 +118,7 @@ const OsRestartModal = ({
               placeholder="Password"
               value={password}
               onChange={e => setPassword(e.target.value)}
+              onKeyDown={onKeyDown}
             />
           </Form.Item>
         </Form>

@@ -4,6 +4,8 @@ import styled from 'styled-components';
 
 import { FaUserCircle } from 'react-icons/fa';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
+import * as DEFINE from '../../../define';
 
 const { Header } = Layout;
 
@@ -42,9 +44,16 @@ const menu = (history: any) => {
     <Menu>
       <Menu.Item
         key="0"
-        onClick={() => {
+        onClick={async () => {
+          try {
+            await axios.get(DEFINE.URL_LOGOUT);
+          } catch (e) {
+            console.error(e);
+          }
+
           history.push('/login2');
         }}
+        style={{ width: '135px', textAlign: 'center' }}
       >
         LogOut
         {/* <a href="http://www.alipay.com/">1st menu item</a> */}

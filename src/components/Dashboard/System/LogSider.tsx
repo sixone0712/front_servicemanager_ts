@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Layout, Menu } from 'antd';
 import {
   useDashBoardState,
@@ -37,6 +37,18 @@ function LogSider(): JSX.Element {
       selected: typeof key === 'number' ? JSON.stringify(key) : key,
     });
   };
+
+  useEffect(() => {
+    // When the device list is updated, check if selected device is in the device list
+    // If the selected device is not in the device list, it is changed to null.
+    if (!list.find(item => item.name === selected)) {
+      dispatch({
+        type: 'SELECT_DEVICE',
+        selected: null,
+      });
+    }
+  }, [list]);
+
   return (
     <Sider
       theme="light"
