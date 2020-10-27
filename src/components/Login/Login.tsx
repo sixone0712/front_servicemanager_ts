@@ -1,22 +1,36 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import './Login.css';
+import axios from 'axios';
+import * as DEFINE from '../../define';
 
 function Login(): JSX.Element {
   const history = useHistory();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
+  const onLogin = async () => {
+    try {
+      const response: any = await axios.get(
+        `${DEFINE.URL_LOGIN}?password=${password}`,
+      );
+      console.log('response', response);
+      if (response.status === 200) {
+        history.replace('/dashboard/system');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert('Login');
-    history.replace('/dashboard');
+    onLogin();
   };
 
   const onEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      alert('Enter');
-      history.replace('/dashboard');
+      onLogin();
     }
   };
 
@@ -98,13 +112,12 @@ function Login(): JSX.Element {
                           onChange={onChange}
                           //noValidate
                         />
-                        {/*
-                        {errors.password.length > 0 && (
+
+                        {password.length <= 0 && (
                           <span className="text-red-700 uppercase font-bold text-xxs">
-                            {errors.password}
+                            Please Enter your password
                           </span>
                         )}
-                        */}
                       </div>
                       <div className="text-center mt-6">
                         <button

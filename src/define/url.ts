@@ -7,3 +7,6 @@ export const URL_OS_RESTRART = URL_HOST + '/servicemanager/api/os/restart';
 export const URL_DEBUG_LOG_FILES = URL_HOST + '/servicemanager/api/files';
 export const URL_DEBUG_LOG_FILES_DOWNLOAD =
   URL_HOST + '/servicemanager/api/files/download';
+export const URL_LOGIN = URL_HOST + '/servicemanager/api/auth/login';
+export const URL_LOGOUT = URL_HOST + '/servicemanager/api/auth/logout';
+export const URL_ME = URL_HOST + '/servicemanager/api/auth/me';
