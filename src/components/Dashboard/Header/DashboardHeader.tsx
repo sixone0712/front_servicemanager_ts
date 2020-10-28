@@ -23,20 +23,21 @@ const HeaderRow = styled(Row)`
 
 const Title = styled(Col)`
   color: white;
-  line-height: 56px;
+  line-height: 30px;
   font-size: 1.25rem;
-  height: 56px;
+  height: 30px;
   font-weight: bold;
 `;
 
 const User = styled(Col)`
   color: white;
-  height: 35px;
+  height: 30px;
 `;
 const UserName = styled(Col)`
-  line-height: 35px;
+  line-height: 30px;
   font-size: 1rem;
-  height: 35px;
+  height: 30px;
+  margin-left: 10px;
 `;
 
 const menu = (history: any) => {
@@ -51,7 +52,7 @@ const menu = (history: any) => {
             console.error(e);
           }
 
-          history.push('/login2');
+          history.push('/login');
         }}
         style={{ width: '135px', textAlign: 'center' }}
       >
@@ -71,11 +72,13 @@ function DashboardHeader(): JSX.Element {
         <User>
           <Dropdown overlay={() => menu(history)} trigger={['click']}>
             <a onClick={e => e.preventDefault()}>
-              <Row align={'middle'}>
-                <Space>
-                  <FaUserCircle size={22} />
-                  <UserName>Administrator</UserName>
-                </Space>
+              <Row
+                justify="center"
+                align="middle"
+                style={{ height: '30px', color: 'white' }}
+              >
+                <FaUserCircle size={22} />
+                <UserName>Administrator</UserName>
               </Row>
             </a>
           </Dropdown>

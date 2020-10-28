@@ -7,6 +7,7 @@ import {
   Button,
   Space,
   Row,
+  Col,
   Result,
   Modal,
 } from 'antd';
@@ -19,6 +20,7 @@ import useAsyncAxios from '../../../hooks/useAsyncAxios';
 import { join } from 'path';
 import { execFileDownload } from '../../../api/download';
 import * as DEFINE from '../../../define';
+import { openNotification } from '../../../api/notification';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -55,7 +57,7 @@ export enum LogType {
 
 const logFilter = [
   {
-    text: 'User Login/Logout',
+    text: 'User Login_old/Logout',
     value: LogType.LOGIN_OUT,
   },
   {
@@ -120,6 +122,16 @@ function LogTable(): JSX.Element {
   const cancelInfo = useRef<CancelInfo>({ downloadId: null, cancel: false });
 
   useEffect(() => {
+    if (listState.error) {
+      openNotification(
+        'error',
+        'Error',
+        `Failed to get file list of ${selected} due to server problem.`,
+      );
+    }
+  }, [listState.error]);
+
+  useEffect(() => {
     const { lists } = listState?.data?.data || { lists: [] };
 
     console.log('[LogTable][useEffect_1]lists', lists);
@@ -137,7 +149,6 @@ function LogTable(): JSX.Element {
   console.log('[LogTable]fileList', fileList);
 
   useEffect(() => {
-    console.log('[LogTable][useEffect_2]selected', selected);
     if (selected) {
       listRefetch().then(r => r);
     }
@@ -226,17 +237,24 @@ function LogTable(): JSX.Element {
         {!selected && <Result title="Please select a device." />}
         {selected && (
           <>
-            <Row justify="end" style={{ marginBottom: '10px' }}>
+            <Row
+              justify="space-between"
+              align="middle"
+              style={{ marginBottom: '10px' }}
+            >
+              <Col
+                style={{ marginLeft: '10px' }}
+              >{`${selectedRowKeys.length} Files Selected`}</Col>
               <Space>
                 <Button
                   type="primary"
-                  icon={<SyncOutlined style={{ verticalAlign: 0 }} />}
+                  icon={<SyncOutlined />}
                   onClick={onRefersh}
                 >
                   Reload
                 </Button>
                 <Button
-                  icon={<DownloadOutlined style={{ verticalAlign: 0 }} />}
+                  icon={<DownloadOutlined />}
                   onClick={onDownloadFile}
                   disabled={selectedRowKeys.length <= 0}
                   type="primary"

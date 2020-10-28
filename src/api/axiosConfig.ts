@@ -15,7 +15,7 @@ export default function axiosConfig(): void {
       );
       if (error.response.status === 401) {
         sessionStorage.setItem('unauthorizedError', 'true');
-        window.location.replace('/login2');
+        window.location.replace('/login');
       }
 
       return Promise.reject(error);

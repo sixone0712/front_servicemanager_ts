@@ -106,7 +106,6 @@ function useAsyncAxios(
     try {
       dispatch({ type: 'LOADING' });
       const data = await callback();
-      console.log('useAsyncAxios/fetchData');
       dispatch({ type: 'SUCCESS', data });
     } catch (e) {
       dispatch({ type: 'ERROR', error: e });

@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 import axios from 'axios';
 import * as DEFINE from '../../../define';
+import { openNotification } from '../../../api/notification';
 
 const title: JSX.Element = (
   <Row>
@@ -48,15 +49,28 @@ const OsRestartModal = ({
       );
 
       if (data.result === 'success') {
-        // success
-        alert('재기동 성공 몇분 후에 페이지를 리로드 해봐');
+        openNotification(
+          'success',
+          'Success',
+          `the OS of ${targetDevice} restart was successful. It takes a few minutes for the OS to restart. Refresh the page in a few minutes.`,
+        );
       } else {
-        // error
-        alert('유저 ID 패스워드 확인');
+        // todo:에러 종류 따라 구분해야함
+        openNotification(
+          'error',
+          'Error',
+          `the OS of ${targetDevice} restart was failed.`,
+        );
       }
     } catch (e) {
+      // todo:에러 종류 따라 구분해야함
       console.error(e);
-      // network error
+      console.error(e.response);
+      openNotification(
+        'error',
+        'Error',
+        `the OS of ${targetDevice} restart was failed.`,
+      );
     } finally {
       form.resetFields();
       setId('');
@@ -106,6 +120,7 @@ const OsRestartModal = ({
               placeholder="ID"
               value={id}
               onChange={e => setId(e.target.value)}
+              autoComplete="off"
             />
           </Form.Item>
           <Form.Item
@@ -119,6 +134,7 @@ const OsRestartModal = ({
               value={password}
               onChange={e => setPassword(e.target.value)}
               onKeyDown={onKeyDown}
+              autoComplete="off"
             />
           </Form.Item>
         </Form>

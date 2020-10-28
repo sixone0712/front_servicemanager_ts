@@ -44,6 +44,7 @@ const statusGenerator: any = async function* (downloadId: string) {
       }
     } catch (e) {
       console.error(e);
+      console.error(e.response);
       return e;
     }
   }
@@ -72,7 +73,7 @@ export const execFileDownload = (
       console.log('downloadId', downloadId);
 
       if (!downloadId) {
-        // network error
+        openNotification('error', 'Error', 'A network error has occurred.');
         return;
       }
       console.log('downloadId', downloadId);
@@ -93,16 +94,16 @@ export const execFileDownload = (
       console.log('status', status);
       if (status) {
         if (status === 'done') {
-          // get downloadurl
-          //alert('get downloadurl');
           downloadFile(url);
         } else if (status === 'error') {
-          //download error
-          alert('download error');
+          openNotification(
+            'error',
+            'Error',
+            'Download failed due to server problem.',
+          );
         }
       } else {
-        // network error
-        alert('network error');
+        openNotification('error', 'Error', 'A network error has occurred.');
       }
 
       // await (async () => {
@@ -133,8 +134,9 @@ export const execFileDownload = (
           `${DEFINE.URL_DEBUG_LOG_FILES_DOWNLOAD}/${cancelInfo.current.downloadId}`,
         );
       } catch (e) {
-        // network error
         console.error(e);
+        console.error(e.response);
+        openNotification('error', 'Error', 'A network error has occurred.');
       }
     },
   });
@@ -152,11 +154,7 @@ const downloadFile = (url: string) => {
   })
     .then(response => {
       if (!response.ok) {
-        openNotification(
-          'error',
-          'Netwrok Error',
-          'The request failed due to an internal server error.',
-        );
+        openNotification('error', 'Error', 'A network error has occurred.');
         return;
       }
 

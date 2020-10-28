@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Table,
   Tag,
@@ -23,6 +23,7 @@ import OsRestartModal from './OsRestartModal';
 import axios from 'axios';
 import { execDockerRestart } from '../../../api/restart';
 import { BsFillCircleFill } from 'react-icons/bs';
+import { openNotification } from '../../../api/notification';
 
 const { Column, ColumnGroup } = Table;
 
@@ -60,6 +61,16 @@ function StatusTable(): JSX.Element {
   const dispatch = useDashBoardDispatch();
   const [osModalVisible, setOsModalVisible] = useState(false);
   const [targetDevice, setTargetDevice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (error) {
+      openNotification(
+        'error',
+        'Error',
+        `Failed to get "Device Status" due to server problem.`,
+      );
+    }
+  }, [error]);
 
   const onRefresh = () => {
     loadDeviceList(dispatch).then(r => r);
@@ -106,7 +117,7 @@ function StatusTable(): JSX.Element {
         <Button
           style={{ width: '100px' }}
           type="primary"
-          icon={<SyncOutlined style={{ verticalAlign: 0 }} />}
+          icon={<SyncOutlined />}
           onClick={onRefresh}
         >
           Reload

@@ -82,10 +82,7 @@ function LogSider(): JSX.Element {
         <Menu.Item key="11">option11</Menu.Item>
         <Menu.Item key="12">option12</Menu.Item> */}
         {list?.map(device => (
-          <Menu.Item
-            icon={<DatabaseOutlined style={{ verticalAlign: 0 }} />}
-            key={device.key}
-          >
+          <Menu.Item icon={<DatabaseOutlined />} key={device.key}>
             {device.name}
           </Menu.Item>
         ))}

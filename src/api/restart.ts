@@ -29,6 +29,7 @@ export const execDockerRestart = (device: string, onRefresh: () => void) => {
         );
         onRefresh();
       } catch (e) {
+        // todo:에러 종류 따라 구분해야함
         openNotification(
           'error',
           'Error',
