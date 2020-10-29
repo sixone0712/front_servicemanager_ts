@@ -89,6 +89,7 @@ const logFilter = [
 export type CancelInfo = {
   downloadId: string | null;
   cancel: boolean;
+  isDownloading: boolean;
 };
 
 // const loadFirstName: PromiseFn<any> = ({ userId }) =>
@@ -119,7 +120,11 @@ function LogTable(): JSX.Element {
   );
 
   const [fileList, setFileList] = useState<LogFileList>([]);
-  const cancelInfo = useRef<CancelInfo>({ downloadId: null, cancel: false });
+  const cancelInfo = useRef<CancelInfo>({
+    downloadId: null,
+    cancel: false,
+    isDownloading: false,
+  });
 
   useEffect(() => {
     if (listState.error) {

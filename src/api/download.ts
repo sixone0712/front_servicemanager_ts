@@ -57,6 +57,7 @@ export const execFileDownload = (
   //init cancelInfo
   cancelInfo.current.downloadId = null;
   cancelInfo.current.cancel = false;
+  cancelInfo.current.isDownloading = false;
 
   // modal init(pop up)
   const modal = Modal.confirm({
@@ -78,6 +79,7 @@ export const execFileDownload = (
       }
       console.log('downloadId', downloadId);
       cancelInfo.current.downloadId = downloadId;
+      cancelInfo.current.isDownloading = true;
 
       const generator = statusGenerator(downloadId);
       let data;
@@ -85,7 +87,7 @@ export const execFileDownload = (
         if (cancelInfo.current.cancel) {
           cancelInfo.current.downloadId = null;
           cancelInfo.current.cancel = false;
-          break;
+          return;
         }
       }
 
@@ -129,14 +131,15 @@ export const execFileDownload = (
     },
     onCancel: async () => {
       cancelInfo.current.cancel = true;
-      try {
-        const response = await axios.delete(
-          `${DEFINE.URL_DEBUG_LOG_FILES_DOWNLOAD}/${cancelInfo.current.downloadId}`,
-        );
-      } catch (e) {
-        console.error(e);
-        console.error(e.response);
-        openNotification('error', 'Error', 'A network error has occurred.');
+      if (cancelInfo.current.isDownloading) {
+        try {
+          const response = await axios.delete(
+            `${DEFINE.URL_DEBUG_LOG_FILES_DOWNLOAD}/${cancelInfo.current.downloadId}`,
+          );
+        } catch (e) {
+          console.error(e);
+          openNotification('error', 'Error', 'A network error has occurred.');
+        }
       }
     },
   });
@@ -150,6 +153,7 @@ const downloadFile = (url: string) => {
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
     //body: JSON.stringify(data),
   })
     .then(response => {
