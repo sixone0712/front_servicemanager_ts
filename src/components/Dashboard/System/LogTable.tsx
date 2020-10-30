@@ -27,7 +27,7 @@ const { Header, Content, Sider } = Layout;
 const { Column, ColumnGroup } = Table;
 
 export type LogFile = {
-  key: string;
+  key: React.Key;
   fileType: string;
   fileName: string;
   fileSize: string;
@@ -141,9 +141,13 @@ function LogTable(): JSX.Element {
 
     console.log('[LogTable][useEffect_1]lists', lists);
     const addKeyList: LogFileList = lists.map(
-      (list: { fileName: string; fileType: string; fileSize: string }) => {
+      (
+        list: { fileName: string; fileType: string; fileSize: string },
+        index: number,
+      ) => {
         return {
-          key: list.fileName,
+          //key: list.fileName,
+          key: index,
           ...list,
         };
       },
@@ -164,6 +168,7 @@ function LogTable(): JSX.Element {
   };
 
   console.log('listState', listState);
+  console.log('selectedRowKeys', selectedRowKeys);
 
   /*
   const { data, error, isLoading, run } = useAsync({
@@ -285,6 +290,28 @@ function LogTable(): JSX.Element {
               // style={{
               //   minWidth: '675px',
               // }}
+              onRow={(record, rowIndex) => {
+                return {
+                  onClick: (
+                    event: React.MouseEvent<HTMLElement, MouseEvent>,
+                  ) => {
+                    if (rowIndex !== undefined) {
+                      let newselectedRowKeys;
+                      if (
+                        selectedRowKeys.find(item => item === rowIndex) !==
+                        undefined
+                      ) {
+                        newselectedRowKeys = selectedRowKeys.filter(
+                          item => item !== rowIndex,
+                        );
+                      } else {
+                        newselectedRowKeys = selectedRowKeys.concat(rowIndex);
+                      }
+                      setSelectedRowKeys(newselectedRowKeys);
+                    }
+                  },
+                };
+              }}
             >
               <Column
                 title="File Type"
