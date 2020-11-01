@@ -21,6 +21,7 @@ import { join } from 'path';
 import { execFileDownload } from '../../../api/download';
 import * as DEFINE from '../../../define';
 import { openNotification } from '../../../api/notification';
+import { ColumnsType } from 'antd/es/table';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -34,16 +35,6 @@ export type LogFile = {
 };
 
 export type LogFileList = LogFile[];
-
-// const dataList: LogFileList = [];
-// for (let i = 0; i < 49; i++) {
-//   dataList.push({
-//     key: `${i}`,
-//     fileType: `tomcat`,
-//     fileName: 'tomcat.log',
-//     fileSize: `24 KB`,
-//   });
-// }
 
 export enum LogType {
   LOGIN_OUT = 'login',
@@ -83,6 +74,33 @@ const logFilter = [
   {
     text: 'Tomcat',
     value: LogType.TOMCAT,
+  },
+];
+
+const columData: ColumnsType<LogFile> = [
+  {
+    title: 'File Type',
+    dataIndex: 'fileType',
+    key: 'fileType',
+    width: '35%',
+    filters: logFilter,
+    onFilter: (value: string | number | boolean, record: LogFile) =>
+      typeof value === 'string' && record.fileType.indexOf(value) === 0,
+    align: 'center',
+  },
+  {
+    title: 'File Name',
+    dataIndex: 'fileName',
+    key: 'fileName',
+    width: '50%',
+    align: 'center',
+  },
+  {
+    title: 'File Size',
+    dataIndex: 'fileSize',
+    key: 'fileSize',
+    width: '15%',
+    align: 'center',
   },
 ];
 
@@ -208,19 +226,6 @@ function LogTable(): JSX.Element {
   };
 
   const onDownloadFile = () => {
-    //
-    // const selectedFileList = selectedRowKeys.reduce(
-    //   (previousValue: any, currentValue: any, currentIndex: any, array) => {
-    //     console.log('previousValue', previousValue);
-    //     console.log('currentValue', currentValue);
-    //     console.log('currentIndex', currentIndex);
-    //     console.log('array', array);
-    //     const foundKey = fileList.find(list => list.key === currentValue);
-    //     if (foundKey) return foundKey;
-    //   },
-    //   {},
-    // );
-
     const selectedFileList: LogFileList = fileList.filter(list => {
       return selectedRowKeys.find(key => key === list.key) ? true : false;
     });
@@ -228,8 +233,25 @@ function LogTable(): JSX.Element {
     execFileDownload(selectedFileList, cancelInfo);
   };
 
+  const onRow = (record: LogFile, rowIndex: number | undefined) => {
+    return {
+      onClick: (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        if (rowIndex !== undefined) {
+          let newselectedRowKeys;
+          if (selectedRowKeys.find(item => item === rowIndex) !== undefined) {
+            newselectedRowKeys = selectedRowKeys.filter(
+              item => item !== rowIndex,
+            );
+          } else {
+            newselectedRowKeys = selectedRowKeys.concat(rowIndex);
+          }
+          setSelectedRowKeys(newselectedRowKeys);
+        }
+      },
+    };
+  };
+
   return (
-    // <Layout style={{ padding: '0 24px 24px' }}>
     <Layout>
       <Content
         style={{
@@ -275,71 +297,16 @@ function LogTable(): JSX.Element {
               </Space>
             </Row>
             <Table
+              columns={columData}
               rowSelection={rowSelection}
-              // columns={columns}
-              //dataSource={dataList}
-              // dataSource={
-              //   listState.data?.data?.lists ? listState.data.data.lists : []
-              // }
               dataSource={fileList}
               size="small"
               bordered
               pagination={{ pageSize: 7, position: ['bottomCenter'] }}
               tableLayout="fixed"
               loading={listState.loading}
-              // style={{
-              //   minWidth: '675px',
-              // }}
-              onRow={(record, rowIndex) => {
-                return {
-                  onClick: (
-                    event: React.MouseEvent<HTMLElement, MouseEvent>,
-                  ) => {
-                    if (rowIndex !== undefined) {
-                      let newselectedRowKeys;
-                      if (
-                        selectedRowKeys.find(item => item === rowIndex) !==
-                        undefined
-                      ) {
-                        newselectedRowKeys = selectedRowKeys.filter(
-                          item => item !== rowIndex,
-                        );
-                      } else {
-                        newselectedRowKeys = selectedRowKeys.concat(rowIndex);
-                      }
-                      setSelectedRowKeys(newselectedRowKeys);
-                    }
-                  },
-                };
-              }}
-            >
-              <Column
-                title="File Type"
-                dataIndex="fileType"
-                key="fileType"
-                align="center"
-                width="35%"
-                filters={logFilter}
-                onFilter={(value: string | number | boolean, record: LogFile) =>
-                  typeof value === 'string' &&
-                  record.fileType.indexOf(value) === 0
-                }
-              />
-              <Column
-                title="File Name"
-                dataIndex="fileName"
-                key="fileName"
-                align="center"
-                width="50%"
-              />
-              <Column
-                title="File Size"
-                dataIndex="fileSize"
-                key="fileSize"
-                align="center"
-                width="15%"
-              />
-            </Table>
+              onRow={onRow}
+            />
           </>
         )}
       </Content>
