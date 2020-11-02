@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Divider, Layout, Menu } from 'antd';
+import { Divider, Layout } from 'antd';
 import StatusTable from './StatusTable';
 import LogDownload from './LogDownload';
 import {

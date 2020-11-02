@@ -74,14 +74,17 @@ function dashBoardReducer(
         console.log('action.data', action.data);
         draft.deviceInfo.list =
           action.data?.map(
-            (item: {
-              volumeUsed: string | null;
-              volumeTotal: string | null;
-              name: string | null;
-              type: string | null;
-              host: string | null;
-              containers: any;
-            }) => {
+            (
+              item: {
+                volumeUsed: string | null;
+                volumeTotal: string | null;
+                name: string | null;
+                type: string | null;
+                host: string | null;
+                containers: any;
+              },
+              index: number,
+            ) => {
               const status = item.containers?.map((container: any) => {
                 return `${container.name} (${container.status.replace(
                   /\(.+\)\s/g,
@@ -90,7 +93,7 @@ function dashBoardReducer(
               });
 
               return {
-                key: item.name,
+                key: index,
                 name: item.name,
                 type: item.type,
                 ip: item.host,

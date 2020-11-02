@@ -1,31 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Table,
-  Tag,
-  Space,
-  Spin,
-  Row,
-  Col,
-  Layout,
-  Breadcrumb,
-  Button,
-  Modal,
-} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Breadcrumb, Button, Col, Layout, Row, Table } from 'antd';
 import { RedoOutlined, SyncOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import {
   loadDeviceList,
-  useDashBoardState,
   useDashBoardDispatch,
+  useDashBoardState,
 } from '../../../contexts/DashboardContext';
-import { stringify } from 'querystring';
 import OsRestartModal from './OsRestartModal';
-import axios from 'axios';
 import { execDockerRestart } from '../../../api/restart';
 import { BsFillCircleFill } from 'react-icons/bs';
 import { openNotification } from '../../../api/notification';
+import { LogFile } from './LogTable';
 
-const { Column, ColumnGroup } = Table;
+const { Column } = Table;
 
 export type DockerStatus = {
   key: React.Key;
@@ -61,6 +49,7 @@ function StatusTable(): JSX.Element {
   const dispatch = useDashBoardDispatch();
   const [osModalVisible, setOsModalVisible] = useState(false);
   const [targetDevice, setTargetDevice] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
     if (error) {
@@ -73,6 +62,7 @@ function StatusTable(): JSX.Element {
   }, [error]);
 
   const onRefresh = () => {
+    setCurrentPage(1);
     loadDeviceList(dispatch).then(r => r);
   };
 
@@ -95,6 +85,40 @@ function StatusTable(): JSX.Element {
           </Row>
         ))}
       </>
+    );
+  };
+
+  const renderDockerRestart = (
+    text: string,
+    record: DockerStatus,
+    index: number,
+  ) => {
+    return (
+      <RedoOutlined
+        onClick={() => {
+          setTargetDevice(text);
+          onDockerRestart(text);
+        }}
+      />
+    );
+  };
+
+  const renderOsRestart = (
+    text: string,
+    record: DockerStatus,
+    index: number,
+  ) => {
+    console.log('OSRender');
+    console.log('text', text);
+    console.log('record', record);
+    console.log('index', index);
+    return (
+      <RedoOutlined
+        onClick={() => {
+          setTargetDevice(text);
+          onOsRestart(text);
+        }}
+      />
     );
   };
 
@@ -124,13 +148,20 @@ function StatusTable(): JSX.Element {
         </Button>
       </Row>
       <Table
+        rowKey={(record: DockerStatus) => record.key}
         tableLayout="fixed"
         size="small"
         bordered
-        //dataSource={data}
         dataSource={pending ? [] : list}
-        // scroll={{ y: 185 }}
-        pagination={{ pageSize: 4, position: ['bottomCenter'] }}
+        pagination={{
+          pageSize: 4,
+          position: ['bottomCenter'],
+          current: currentPage,
+          defaultCurrent: 1,
+          onChange: (page, pageSize) => {
+            setCurrentPage(page);
+          },
+        }}
         loading={pending}
       >
         <Column
@@ -168,16 +199,7 @@ function StatusTable(): JSX.Element {
           key="name"
           align="center"
           width="15%"
-          render={(text, record, index) => {
-            return (
-              <RedoOutlined
-                onClick={() => {
-                  setTargetDevice(text);
-                  onDockerRestart(text);
-                }}
-              />
-            );
-          }}
+          render={renderDockerRestart}
         />
         <Column
           title="OS Restart"
@@ -185,20 +207,7 @@ function StatusTable(): JSX.Element {
           key="name"
           align="center"
           width="15%"
-          render={(text, record, index) => {
-            console.log('OSRender');
-            console.log('text', text);
-            console.log('record', record);
-            console.log('index', index);
-            return (
-              <RedoOutlined
-                onClick={() => {
-                  setTargetDevice(text);
-                  onOsRestart(text);
-                }}
-              />
-            );
-          }}
+          render={renderOsRestart}
         />
       </Table>
       <OsRestartModal

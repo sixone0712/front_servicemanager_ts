@@ -1,14 +1,12 @@
 import React, { useEffect } from 'react';
 import { Layout, Menu } from 'antd';
 import {
-  useDashBoardState,
   useDashBoardDispatch,
-  DeviceList,
+  useDashBoardState,
 } from '../../../contexts/DashboardContext';
 import { DatabaseOutlined } from '@ant-design/icons';
 
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+const { Sider } = Layout;
 
 function LogSider(): JSX.Element {
   const dispatch = useDashBoardDispatch();
@@ -27,11 +25,11 @@ function LogSider(): JSX.Element {
     item: React.ReactInstance;
     domEvent: React.MouseEvent<HTMLElement>;
   }) => {
-    // console.log('item', item);
-    // console.log('key', key);
-    // console.log('key', typeof key);
-    // console.log('keyPath', keyPath);
-    // console.log('domEvent', domEvent);
+    console.log('item', item);
+    console.log('key', key);
+    console.log('key', typeof key);
+    console.log('keyPath', keyPath);
+    console.log('domEvent', domEvent);
     dispatch({
       type: 'SELECT_DEVICE',
       selected: typeof key === 'number' ? JSON.stringify(key) : key,
@@ -82,7 +80,7 @@ function LogSider(): JSX.Element {
         <Menu.Item key="11">option11</Menu.Item>
         <Menu.Item key="12">option12</Menu.Item> */}
         {list?.map(device => (
-          <Menu.Item icon={<DatabaseOutlined />} key={device.key}>
+          <Menu.Item icon={<DatabaseOutlined />} key={device.name}>
             {device.name}
           </Menu.Item>
         ))}

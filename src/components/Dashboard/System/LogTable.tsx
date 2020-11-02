@@ -1,32 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Layout,
-  Menu,
-  Table,
   Breadcrumb,
   Button,
-  Space,
-  Row,
   Col,
+  Layout,
+  Menu,
   Result,
-  Modal,
+  Row,
+  Space,
+  Table,
 } from 'antd';
 import { DownloadOutlined, SyncOutlined } from '@ant-design/icons';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { useDashBoardState } from '../../../contexts/DashboardContext';
 import axios, { AxiosResponse } from 'axios';
-import { DeferFn, PromiseFn, useAsync } from 'react-async';
 import useAsyncAxios from '../../../hooks/useAsyncAxios';
-import { join } from 'path';
 import { execFileDownload } from '../../../api/download';
 import * as DEFINE from '../../../define';
 import { openNotification } from '../../../api/notification';
 import { ColumnsType } from 'antd/es/table';
 
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
-const { Column, ColumnGroup } = Table;
+const { Content } = Layout;
 
+// Type
 export type LogFile = {
   key: React.Key;
   fileType: string;
@@ -45,6 +41,12 @@ export enum LogType {
   ERROR = 'error',
   TOMCAT = 'tomcat',
 }
+
+export type CancelInfo = {
+  downloadId: string | null;
+  cancel: boolean;
+  isDownloading: boolean;
+};
 
 const logFilter = [
   {
@@ -104,12 +106,6 @@ const columData: ColumnsType<LogFile> = [
   },
 ];
 
-export type CancelInfo = {
-  downloadId: string | null;
-  cancel: boolean;
-  isDownloading: boolean;
-};
-
 // const loadFirstName: PromiseFn<any> = ({ userId }) =>
 //   fetch(`https://reqres.in/api/users/${userId}`)
 //     .then(res => (res.ok ? Promise.resolve(res) : Promise.reject(res)))
@@ -136,13 +132,13 @@ function LogTable(): JSX.Element {
     [selected],
     true,
   );
-
   const [fileList, setFileList] = useState<LogFileList>([]);
   const cancelInfo = useRef<CancelInfo>({
     downloadId: null,
     cancel: false,
     isDownloading: false,
   });
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
     if (listState.error) {
@@ -177,11 +173,15 @@ function LogTable(): JSX.Element {
 
   useEffect(() => {
     if (selected) {
+      setCurrentPage(1);
+      setSelectedRowKeys([]);
       listRefetch().then(r => r);
     }
   }, [selected]);
 
   const onRefersh = () => {
+    setCurrentPage(1);
+    setSelectedRowKeys([]);
     listRefetch().then(r => r);
   };
 
@@ -297,13 +297,22 @@ function LogTable(): JSX.Element {
               </Space>
             </Row>
             <Table
+              rowKey={(record: LogFile) => record.key}
+              tableLayout="fixed"
+              size="small"
+              bordered
               columns={columData}
               rowSelection={rowSelection}
               dataSource={fileList}
-              size="small"
-              bordered
-              pagination={{ pageSize: 7, position: ['bottomCenter'] }}
-              tableLayout="fixed"
+              pagination={{
+                pageSize: 7,
+                position: ['bottomCenter'],
+                current: currentPage,
+                defaultCurrent: 1,
+                onChange: (page, pageSize) => {
+                  setCurrentPage(page);
+                },
+              }}
               loading={listState.loading}
               onRow={onRow}
             />
