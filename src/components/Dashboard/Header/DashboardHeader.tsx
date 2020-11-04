@@ -52,7 +52,7 @@ const menu = (history: any) => {
             console.error(e);
           }
 
-          history.push('/login');
+          history.push('/servicemanager/login');
         }}
         style={{ width: '135px', textAlign: 'center' }}
       >

@@ -18,11 +18,11 @@ function App(): JSX.Element {
     <Provider>
       <div className="App">
         <Switch>
-          <Route path="/" exact component={RootPage} />
-          <Route path="/login" component={Login} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/notfound" component={NotFound} />
-          <Redirect path="*" to="/notfound" />
+          <Route path="/servicemanager" exact component={RootPage} />
+          <Route path="/servicemanager/login" component={Login} />
+          <Route path="/servicemanager/dashboard" component={Dashboard} />
+          <Route path="/servicemanager/notfound" component={NotFound} />
+          <Redirect path="*" to="/servicemanager/notfound" />
         </Switch>
       </div>
     </Provider>
@@ -37,9 +37,9 @@ function RootPage() {
     async function isValidLogin() {
       try {
         await axios.get(DEFINE.URL_ME);
-        history.push('/dashboard/system');
+        history.push('/servicemanager/dashboard/system');
       } catch (e) {
-        history.push('/login');
+        history.push('/servicemanager/login');
       }
     }
     isValidLogin().then(res => res);

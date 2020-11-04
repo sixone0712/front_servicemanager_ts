@@ -61,5 +61,5 @@
     "eslint-plugin-react": "^7.21.4",
     "prettier": "^2.1.2"
   },
-  "homepage": "/rss"
+  "homepage": "/servicemanager"
 }
