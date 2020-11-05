@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as DEFINE from '../define';
 
 export default function axiosConfig(): void {
   axios.defaults.withCredentials = true;
@@ -15,7 +16,7 @@ export default function axiosConfig(): void {
       );
       if (error.response.status === 401) {
         sessionStorage.setItem('unauthorizedError', 'true');
-        window.location.replace('/login');
+        window.location.replace(DEFINE.URL_PAGE_LOGIN);
       }
 
       return Promise.reject(error);

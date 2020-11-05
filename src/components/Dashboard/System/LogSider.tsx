@@ -54,31 +54,14 @@ function LogSider(): JSX.Element {
       style={{
         overflow: 'auto',
         height: '453px',
-        // position: 'fixed',
       }}
     >
       <Menu
         theme="light"
         mode="inline"
-        // defaultSelectedKeys={['1']}
-        // style={{ height: '100%', borderRight: 0 }}
         style={{ height: '100%' }}
         onClick={onClick}
       >
-        {/* <Menu.Item key={'ESP_01'}>ESP_01</Menu.Item>
-        <Menu.Item key={'OTS_02'}>OTS_01</Menu.Item>
-        <Menu.Item key={'OTS_03'}>OTS_02</Menu.Item>
-        <Menu.Item key={'OTS_04'}>
-          OTS_04_OTS_04_OTS_04_OTS_04_OTS_04_OTS_04_OTS_04_OTS_04
-        </Menu.Item>
-        <Menu.Item key="5">option5</Menu.Item>
-        <Menu.Item key="6">option6</Menu.Item>
-        <Menu.Item key="7">option7</Menu.Item>
-        <Menu.Item key="8">option8</Menu.Item>
-        <Menu.Item key="9">option9</Menu.Item>
-        <Menu.Item key="10">option10</Menu.Item>
-        <Menu.Item key="11">option11</Menu.Item>
-        <Menu.Item key="12">option12</Menu.Item> */}
         {list?.map(device => (
           <Menu.Item icon={<DatabaseOutlined />} key={device.name}>
             {device.name}

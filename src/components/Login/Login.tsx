@@ -32,7 +32,7 @@ function Login() {
       );
       console.log('response', response);
       if (response.status === 200) {
-        history.replace('/dashboard/system');
+        history.push(DEFINE.URL_PAGE_DASHBOARD_SYSTEM);
       }
     } catch (e) {
       console.log(e);

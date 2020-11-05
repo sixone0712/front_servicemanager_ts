@@ -1,9 +1,9 @@
 import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import DashboardHeader from './Header/DashboardHeader';
 import SystemInfo from './System';
 import { Col, Layout, Row } from 'antd';
-import NotFound from '../../pages/404';
+import * as DEFINE from '../../define';
 
 const { Footer } = Layout;
 
@@ -29,8 +29,11 @@ function Dashboard(): JSX.Element {
       <Layout>
         <DashboardHeader />
         <Switch>
-          <Route path="/dashboard/system" component={SystemInfo} />
-          <Redirect path="*" to="/notfound" />
+          <Route
+            path={DEFINE.URL_PAGE_DASHBOARD_SYSTEM}
+            component={SystemInfo}
+          />
+          <Redirect path="*" to={DEFINE.URL_PAGE_NOT_FOUND} />
         </Switch>
         <DashboardFooter />
       </Layout>
