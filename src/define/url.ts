@@ -1,4 +1,5 @@
-export const URL_HOST = 'http://localhost:8080';
+export const URL_HOST = '';
+//export const URL_HOST = 'http://localhost:8080';
 //export const URL_HOST = 'http://10.1.36.118:8080';
 export const URL_SYSTEM = URL_HOST + '/servicemanager/api/system';
 export const URL_DOCKER_RESTART =

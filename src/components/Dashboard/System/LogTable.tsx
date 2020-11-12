@@ -151,10 +151,10 @@ function LogTable(): JSX.Element {
   }, [listState.error]);
 
   useEffect(() => {
-    const { lists } = listState?.data?.data || { lists: [] };
+    const { list } = listState?.data?.data || { list: [] };
 
-    console.log('[LogTable][useEffect_1]lists', lists);
-    const addKeyList: LogFileList = lists.map(
+    console.log('[LogTable][useEffect_1]list', list);
+    const addKeyList: LogFileList = list.map(
       (
         list: { fileName: string; fileType: string; fileSize: string },
         index: number,
@@ -227,7 +227,7 @@ function LogTable(): JSX.Element {
 
   const onDownloadFile = () => {
     const selectedFileList: LogFileList = fileList.filter(list => {
-      return selectedRowKeys.find(key => key === list.key) ? true : false;
+      return selectedRowKeys.find(key => key === list.key) !== undefined;
     });
     console.log('selectedFileList', selectedFileList);
     execFileDownload(selectedFileList, cancelInfo);

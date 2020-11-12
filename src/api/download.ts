@@ -16,9 +16,11 @@ const requestDownloadId = async (
   console.log('[requestDownloadId]selectedFileList', selectedFileList);
   try {
     const {
-      data: { downloadId },
-    } = await axios.post(DEFINE.URL_DEBUG_LOG_FILES, selectedFileList);
-    return downloadId;
+      data: { requestNo },
+    } = await axios.post(DEFINE.URL_DEBUG_LOG_FILES, {
+      list: selectedFileList,
+    });
+    return requestNo;
   } catch (e) {
     console.error(e);
     return null;
@@ -162,8 +164,17 @@ const downloadFile = (url: string) => {
         return;
       }
 
+      response.headers.forEach(function (value: string, name: string) {
+        console.log(name + ': ' + value);
+      });
+
       const contentDisposition = response.headers.get('Content-Disposition');
       console.log('contentDisposition', contentDisposition);
+      console.log(
+        'contentDisposition',
+        response.headers.get('content-disposition'),
+      );
+
       const fileName: string =
         contentDisposition
           ?.substring(contentDisposition.lastIndexOf('=') + 1)

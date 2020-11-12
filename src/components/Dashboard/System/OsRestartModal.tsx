@@ -40,28 +40,19 @@ const OsRestartModal = ({
   const onFinish = async () => {
     try {
       setConfirmLoading(true);
-      const { data } = await axios.post(
+      const response = await axios.post(
         `${DEFINE.URL_OS_RESTRART}?device=${targetDevice}`,
         {
           id: id,
           password: password,
         },
       );
-
-      if (data.result === 'success') {
-        openNotification(
-          'success',
-          'Success',
-          `the OS of ${targetDevice} restart was successful. It takes a few minutes for the OS to restart. Refresh the page in a few minutes.`,
-        );
-      } else {
-        // todo:에러 종류 따라 구분해야함
-        openNotification(
-          'error',
-          'Error',
-          `the OS of ${targetDevice} restart was failed.`,
-        );
-      }
+      console.log('response', response);
+      openNotification(
+        'success',
+        'Success',
+        `the OS of ${targetDevice} restart was successful. It takes a few minutes for the OS to restart. Refresh the page in a few minutes.`,
+      );
     } catch (e) {
       // todo:에러 종류 따라 구분해야함
       console.error(e);
